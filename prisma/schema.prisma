@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  password    String
+  role        String   // "manager" | "employee" | "intern"
+  fullName    String   @default("")
+  avatarColor String   @default("#ff0000")
+  bio         String   @default("")
+  createdAt   DateTime @default(now())
+
+  // Interns have a createdBy pointing to the employee who added them
+  createdById Int?
+  createdBy   User?  @relation("ManagedInterns", fields: [createdById], references: [id])
+  managedInterns User[] @relation("ManagedInterns")
+
+  channels    Channel[]
+  savedReels  SavedReel[]
+  notesGiven  InternNote[] @relation("NotesByReviewer")
+  notesAbout  InternNote[] @relation("NotesAboutIntern")
+}
+
+model Channel {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  channelId   String
+  channelName String   @default("")
+  channelUrl  String   @default("")
+  country     String   @default("")
+  category    String   @default("")
+  notes       String   @default("")
+  addedAt     DateTime @default(now())
+  snapshots   Snapshot[]
+  oauthToken  OAuthToken?
+}
+
+model Snapshot {
+  id             Int      @id @default(autoincrement())
+  channelId      Int
+  channel        Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  fetchedAt      DateTime @default(now())
+  subscribers    Int      @default(0)
+  totalViews     Int      @default(0)
+  videoCount     Int      @default(0)
+  avgViews       Int      @default(0)
+  engagementRate Float    @default(0)
+  description    String   @default("")
+  thumbnail      String   @default("")
+  topVideos      String   @default("[]")
+}
+
+model SavedReel {
+  id           Int      @id @default(autoincrement())
+  savedById    Int
+  savedBy      User     @relation(fields: [savedById], references: [id])
+  videoId      String
+  title        String   @default("")
+  channelName  String   @default("")
+  thumbnail    String   @default("")
+  url          String   @default("")
+  views        Int      @default(0)
+  likes        Int      @default(0)
+  comments     Int      @default(0)
+  published    String   @default("")
+  reviewerNote String   @default("")
+  tag          String   @default("")
+  savedAt      DateTime @default(now())
+}
+
+model InternNote {
+  id         Int      @id @default(autoincrement())
+  reviewerId Int
+  reviewer   User     @relation("NotesByReviewer", fields: [reviewerId], references: [id])
+  internId   Int
+  intern     User     @relation("NotesAboutIntern", fields: [internId], references: [id])
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+model OAuthToken {
+  id          Int      @id @default(autoincrement())
+  channelId   Int      @unique
+  channel     Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  tokenJson   String
+  connectedAt DateTime @default(now())
+}

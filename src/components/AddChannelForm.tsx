@@ -41,16 +41,19 @@ export function AddChannelForm() {
           value={url} onChange={e => setUrl(e.target.value)}
           required className="form-input flex-[2] min-w-[200px]"
         />
-        <select value={category} onChange={e => setCategory(e.target.value)} className="form-input">
-          <option value="">Category</option>
-          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+        <select value={category} onChange={e => setCategory(e.target.value)} className="form-input" required>
+          <option value="" disabled>Select Category</option>
+          <option value="JEE">JEE</option>
+          <option value="K12">K12</option>
+          <option value="UPSC">UPSC</option>
+          <option value="NEET">NEET</option>
         </select>
-        <input type="text" placeholder="Notes" value={notes} onChange={e => setNotes(e.target.value)} className="form-input" />
+        <input type="text" placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="form-input" />
         <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Adding..." : "Add Channel"}
         </button>
       </form>
-      {msg && <p className="mt-2 text-sm text-[var(--muted)]">{msg}</p>}
+      {msg && <p className={`mt-2 text-sm ${msg.includes("Error") || msg.includes("already") ? "text-red-400" : "text-green-400"}`}>{msg}</p>}
     </div>
   );
 }

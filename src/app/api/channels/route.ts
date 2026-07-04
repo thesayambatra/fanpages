@@ -30,9 +30,9 @@ export async function POST(req: NextRequest) {
   if (!channelId) return NextResponse.json({ error: "Could not resolve channel ID" }, { status: 400 });
 
   const existing = await prisma.channel.findFirst({
-    where: { userId: Number(user.id), channelId },
+    where: { channelId },
   });
-  if (existing) return NextResponse.json({ error: "Channel already added" }, { status: 409 });
+  if (existing) return NextResponse.json({ error: "Channel already tracked (by " + (existing.userId === Number(user.id) ? "you" : "another user") + ")" }, { status: 409 });
 
   const ch = await prisma.channel.create({
     data: { userId: Number(user.id), channelId, channelUrl: url, category: category || "", notes: notes || "" },

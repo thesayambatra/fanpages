@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { ensureSeeded } from "./seed";
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -15,6 +16,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
+        await ensureSeeded();
         const user = await prisma.user.findUnique({
           where: { username: credentials.username },
         });

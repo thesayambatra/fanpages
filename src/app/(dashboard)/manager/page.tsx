@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { channelsVisibleTo, latestSnapshot } from "@/lib/db-helpers";
 import Link from "next/link";
+import { TrendingChannels } from "@/components/TrendingChannels";
 
 export default async function ManagerDashboard() {
   const session = await requireRole("manager");
@@ -139,6 +140,9 @@ export default async function ManagerDashboard() {
           </table>
         </div>
       </div>
+
+      {/* Trending Channels */}
+      <TrendingChannels />
     </>
   );
 }

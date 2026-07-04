@@ -18,10 +18,12 @@ export function Navbar() {
           { href: "/manager/analytics", label: "Analytics" },
           { href: "/manager/growth", label: "Growth" },
           { href: "/manager/top-videos", label: "Top Videos" },
+          { href: "/manager/compare", label: "Compare" },
           { href: "/manager/quick-open", label: "Quick Open" },
           { href: "/manager/team", label: "Team" },
           { href: "/manager/saved-reels", label: "Saved Reels" },
           { href: "/manager/reports", label: "Reports" },
+          { href: "/manager/activity", label: "Activity" },
         ]
       : role === "employee"
         ? [

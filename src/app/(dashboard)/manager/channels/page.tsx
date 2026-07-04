@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { enrichChannel } from "@/lib/db-helpers";
+import { PerformanceBadges } from "@/components/PerformanceBadges";
 
 export default async function ManagerChannels({ searchParams }: { searchParams: { [key: string]: string } }) {
   const session = await requireRole("manager");
@@ -70,6 +71,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
                     <div className="ch-cell">
                       {ch.thumbnail && <img src={ch.thumbnail} className="mini-thumb" alt="" />}
                       <a href={ch.url} target="_blank" className="hover:text-red-500">{ch.channelName}</a>
+                      <PerformanceBadges subscribers={ch.subscribers} engagementRate={ch.engagementRate} />
                     </div>
                   </td>
                   <td>{ch.category ? <span className="tag">{ch.category}</span> : "—"}</td>

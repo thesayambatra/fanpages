@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -52,6 +53,7 @@ export function Navbar() {
         ))}
       </div>
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <div className="avatar" style={{ background: user.avatarColor }}>
           {user.name?.[0] || "?"}
         </div>

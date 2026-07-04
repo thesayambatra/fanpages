@@ -2,6 +2,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -30,6 +31,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-body">
+      <div className="fixed top-4 right-4"><ThemeToggle /></div>
       <div className="login-wrap text-center">
         <div className="text-5xl mb-4">▶</div>
         <h1 className="text-xl font-black mb-1">Unacademy FanPages Report</h1>

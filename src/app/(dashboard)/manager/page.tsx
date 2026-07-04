@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { channelsVisibleTo, latestSnapshot } from "@/lib/db-helpers";
 import Link from "next/link";
 import { TrendingChannels } from "@/components/TrendingChannels";
+import { RecentPosts } from "@/components/RecentPosts";
 
 export default async function ManagerDashboard() {
   const session = await requireRole("manager");
@@ -143,6 +144,9 @@ export default async function ManagerDashboard() {
 
       {/* Trending Channels */}
       <TrendingChannels />
+
+      {/* Recent Posts */}
+      <RecentPosts />
     </>
   );
 }

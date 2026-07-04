@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { latestSnapshot } from "@/lib/db-helpers";
 import Link from "next/link";
+import { RecentPosts } from "@/components/RecentPosts";
 
 export default async function EmployeeDashboard() {
   const session = await requireRole("employee");
@@ -119,6 +120,9 @@ export default async function EmployeeDashboard() {
           <p className="text-[var(--muted)]">No interns yet. <Link href="/employee/interns" className="text-red-500 hover:underline">Add your first intern</Link></p>
         </div>
       )}
+
+      {/* Recent Posts */}
+      <RecentPosts />
     </>
   );
 }

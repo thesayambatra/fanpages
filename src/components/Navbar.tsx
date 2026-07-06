@@ -25,6 +25,7 @@ export function Navbar() {
           { href: "/manager/saved-reels", label: "Saved Reels" },
           { href: "/manager/reports", label: "Reports" },
           { href: "/manager/activity", label: "Activity" },
+          { href: "/kt", label: "KT Doc" },
         ]
       : role === "employee"
         ? [
@@ -32,10 +33,12 @@ export function Navbar() {
             { href: "/employee/channels", label: "My Channels" },
             { href: "/employee/growth", label: "Growth" },
             { href: "/employee/interns", label: "Interns" },
+            { href: "/kt", label: "KT Doc" },
           ]
         : [
             { href: "/intern", label: "Dashboard" },
             { href: "/intern/channels", label: "My Channels" },
+            { href: "/kt", label: "KT Doc" },
           ];
 
   return (

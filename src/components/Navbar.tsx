@@ -16,36 +16,23 @@ export function Navbar() {
       ? [
           { href: "/manager", label: "Dashboard" },
           { href: "/manager/channels", label: "Channels" },
-          { href: "/manager/analytics", label: "Analytics" },
-          { href: "/manager/growth", label: "Growth" },
-          { href: "/manager/top-videos", label: "Top Videos" },
-          { href: "/manager/compare", label: "Compare" },
-          { href: "/manager/quick-open", label: "Quick Open" },
-          { href: "/manager/saved-reels", label: "Saved Reels" },
-          { href: "/manager/reports", label: "Reports" },
-          { href: "/manager/activity", label: "Activity" },
           { href: "/team", label: "Team" },
           { href: "/gallery", label: "Gallery" },
-          { href: "/saved", label: "Saved" },
           { href: "/kt", label: "KT Doc" },
         ]
       : role === "employee"
         ? [
             { href: "/employee", label: "Dashboard" },
-            { href: "/employee/channels", label: "My Channels" },
-            { href: "/employee/growth", label: "Growth" },
+            { href: "/employee/channels", label: "Channels" },
             { href: "/employee/interns", label: "Interns" },
             { href: "/team", label: "Team" },
-            { href: "/gallery", label: "Gallery" },
-            { href: "/saved", label: "Saved" },
             { href: "/kt", label: "KT Doc" },
           ]
         : [
             { href: "/intern", label: "Dashboard" },
-            { href: "/intern/channels", label: "My Channels" },
+            { href: "/intern/channels", label: "Channels" },
             { href: "/team", label: "Team" },
             { href: "/gallery", label: "Gallery" },
-            { href: "/saved", label: "Saved" },
             { href: "/kt", label: "KT Doc" },
           ];
 

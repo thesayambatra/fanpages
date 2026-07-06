@@ -33,7 +33,7 @@ export async function latestSnapshot(channelDbId: number) {
 }
 
 export async function channelsVisibleTo(userId: number, role: string) {
-  if (role === "manager") return prisma.channel.findMany({ include: { user: true } });
+  if (role === "manager" || role === "cbo") return prisma.channel.findMany({ include: { user: true } });
   if (role === "employee") {
     const interns = await prisma.user.findMany({ where: { createdById: userId } });
     const internIds = interns.map((i) => i.id);

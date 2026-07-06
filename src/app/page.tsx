@@ -5,7 +5,7 @@ export default async function Home() {
   const session = await getSession();
   if (!session) redirect("/login");
   const role = (session.user as any).role;
-  if (role === "manager") redirect("/manager");
+  if (role === "manager" || role === "cbo") redirect("/manager");
   if (role === "employee") redirect("/employee");
   redirect("/intern");
 }

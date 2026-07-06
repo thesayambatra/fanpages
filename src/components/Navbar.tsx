@@ -12,7 +12,7 @@ export function Navbar() {
   const role = user.role;
 
   const links =
-    role === "manager"
+    role === "manager" || role === "cbo"
       ? [
           { href: "/manager", label: "Dashboard" },
           { href: "/manager/channels", label: "Channels" },

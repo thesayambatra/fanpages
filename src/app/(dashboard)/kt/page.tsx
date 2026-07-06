@@ -144,6 +144,52 @@ export default async function KTPage() {
         </div>
       </div>
 
+      {/* JEE Fan Pages */}
+      <div className="card">
+        <div className="card-header"><h3>⚗️ JEE Fan Pages (YouTube Channels)</h3></div>
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead><tr><th>#</th><th>Channel Name</th><th>Link</th></tr></thead>
+            <tbody>
+              {[
+                { name: "DhairyaVerse", url: "https://www.youtube.com/@DhairyaVerse-e9f" },
+                { name: "IIT Supremacy", url: "https://www.youtube.com/@IITSupremacy" },
+                { name: "Queen of Math", url: "https://www.youtube.com/@queenofmath" },
+                { name: "IIT Hustlers", url: "https://www.youtube.com/@IITHustlers-n4o" },
+                { name: "IITB Motivation", url: "https://www.youtube.com/@IITBMotivation-t7l" },
+                { name: "IIT Mains", url: "https://www.youtube.com/@IITmains21" },
+                { name: "Unacademy Legends", url: "https://www.youtube.com/@UnacademyLegends" },
+                { name: "Jee Success 300", url: "https://www.youtube.com/@Jeesuccess300" },
+                { name: "Arvind Kalia Bhai", url: "https://www.youtube.com/channel/UCkNe4CgfGRKSbwRz7myb0bw" },
+                { name: "IIT Dreamers Army", url: "https://www.youtube.com/channel/UCMXSYDdEzVNROSwidqHvpUQ" },
+                { name: "Future IITians Club", url: "https://www.youtube.com/@FutureIITiansClub21/shorts" },
+                { name: "Mission IIT", url: "https://www.youtube.com/@MissionIIT-i7e/shorts" },
+                { name: "IIT Rankers", url: "https://www.youtube.com/channel/UCbCP5dDKdqd2E3vH2tHmnMQ" },
+                { name: "JEE Warriors", url: "https://www.youtube.com/channel/UCo78kPjnwB0_6Vda_lEHxZw" },
+                { name: "IIT Dream Chasers", url: "https://www.youtube.com/channel/UCCv1QJowNAE93vkrgMbv2Uw" },
+                { name: "IITian Path", url: "https://youtube.com/@iitianpath-h8o4f" },
+                { name: "JEE Ignite", url: "https://youtube.com/@jeeignite-e8u" },
+                { name: "Dhairya Mam Fanpage", url: "https://www.youtube.com/@DhairyaMamFanpage" },
+                { name: "DHAIRYA GOALS💛", url: "https://youtube.com/@dhairya_goals" },
+                { name: "DHARIYA Mam", url: "https://www.youtube.com/@DhairyaMam" },
+                { name: "Lecture Feels", url: "https://youtube.com/@lecturefeels" },
+                { name: "MISSION IIT", url: "https://www.youtube.com/@TheMission_IIT" },
+                { name: "Aim IIT", url: "https://youtube.com/@aim_iit0" },
+                { name: "Jee Zone", url: "https://www.youtube.com/@jeezoneyt" },
+                { name: "JEE Revolution", url: "https://youtube.com/@jeerevolution-09" },
+                { name: "Jee Hustle", url: "https://youtube.com/@jeehustle-l1b" },
+              ].map((ch, i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td className="font-medium">{ch.name}</td>
+                  <td><a href={ch.url} target="_blank" className="hover:text-[var(--red)] text-xs">{ch.url.replace("https://www.youtube.com/", "").replace("https://youtube.com/", "")}</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* UPSC Educators */}
       <div className="card">
         <div className="card-header"><h3>🏛️ UPSC Educators</h3></div>

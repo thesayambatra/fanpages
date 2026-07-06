@@ -236,23 +236,125 @@ function UPSCTab() {
         <div className="flex items-center gap-3 mb-4"><span className="text-3xl">🏛️</span><div><h3 className="text-lg font-bold">UPSC Category</h3><p className="text-xs text-[var(--muted)]">POC: Sudhanshu Sharma</p></div></div>
       </div>
 
-      {/* Hindi Panel */}
+      {/* Detailed Educator Profiles */}
       <div className="card">
-        <div className="card-header"><h3>🇮🇳 Hindi Panel Educators</h3></div>
-        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          <div className="lb-row"><div className="avatar" style={{ background: "#5856d6" }}>S</div><div className="lb-info"><div className="lb-name">Sudarshan Gurjar</div><div className="lb-meta">UPSC Hindi</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#ff2d55" }}>M</div><div className="lb-info"><div className="lb-name">Mrunal Patel</div><div className="lb-meta">UPSC Hindi</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#ff9500" }}>M</div><div className="lb-info"><div className="lb-name">Madhukar Kotawe</div><div className="lb-meta">UPSC Hindi</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#34c759" }}>S</div><div className="lb-info"><div className="lb-name">Siddharth Arora</div><div className="lb-meta">UPSC Hindi</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#00c7be" }}>P</div><div className="lb-info"><div className="lb-name">Prateek</div><div className="lb-meta">UPSC Hindi</div></div></div>
+        <div className="card-header"><h3>👨‍🏫 UPSC Educators — Detailed Profiles</h3></div>
+        <div className="space-y-4">
+
+          {/* Mrunal Patel */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#ff2d55", width: 44, height: 44, fontSize: 16 }}>M</div>
+              <div>
+                <div className="font-bold text-base">Dr. Mrunal Patel</div>
+                <div className="text-xs text-[var(--muted)]">Economics · &quot;God of Economy&quot;</div>
+              </div>
+              <span className="tag ml-auto">Economics</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• Alumnus of LMCP, PDEU</li>
+              <li>• Over a decade of teaching experience</li>
+              <li>• 1 Million+ subscribers on YouTube</li>
+              <li>• Called the &quot;God of Economy&quot;</li>
+              <li>• The Most Trusted Educator in UPSC Ecosystem</li>
+              <li>• Unique Teaching Style — Roasting</li>
+            </ul>
+          </div>
+
+          {/* Sudarshan Gurjar */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#5856d6", width: 44, height: 44, fontSize: 16 }}>S</div>
+              <div>
+                <div className="font-bold text-base">Sudarshan Gurjar</div>
+                <div className="text-xs text-[var(--muted)]">Geography & Environment · Aspirational & Motivator</div>
+              </div>
+              <span className="tag ml-auto">Geography</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• 9+ Years Teaching Experience</li>
+              <li>• India&apos;s Top Geography & Environment Educator</li>
+              <li>• Guided 5 Lakh+ Learners in UPSC & State Service</li>
+              <li>• 1500+ Students cleared Prelims and Mains</li>
+              <li>• Most Followed Educator in UPSC Ecosystem</li>
+            </ul>
+          </div>
+
+          {/* Pratik Nayak */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#ff9500", width: 44, height: 44, fontSize: 16 }}>P</div>
+              <div>
+                <div className="font-bold text-base">Pratik Nayak</div>
+                <div className="text-xs text-[var(--muted)]">History · Top History UPSC Educator</div>
+              </div>
+              <span className="tag ml-auto">History</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• 12 Years Teaching Experience</li>
+              <li>• 10 Million+ views on YouTube</li>
+              <li>• Studied at CEPT University</li>
+              <li>• Worked with Government of Gujarat</li>
+              <li>• Top Educator on Unacademy</li>
+              <li>• 500+ Learners cleared Prelims and Mains</li>
+            </ul>
+          </div>
+
+          {/* Madhukar Kotawe */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#34c759", width: 44, height: 44, fontSize: 16 }}>M</div>
+              <div>
+                <div className="font-bold text-base">Madhukar Kotawe</div>
+                <div className="text-xs text-[var(--muted)]">Geography, Polity, Economics, Current Affairs · Famous CSAT Educator</div>
+              </div>
+              <span className="tag ml-auto">Multi-Subject</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• 16 Years Teaching Experience</li>
+              <li>• Guided 3 Lakh+ CSE aspirants</li>
+              <li>• 3000+ learners cleared UPSC Prelims and Mains</li>
+              <li>• Motivation + Perception Builder</li>
+              <li>• Teaches Geography, Polity, Economics & Current Affairs</li>
+            </ul>
+          </div>
+
+          {/* Siddharth Arora */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#00c7be", width: 44, height: 44, fontSize: 16 }}>S</div>
+              <div>
+                <div className="font-bold text-base">Siddharth Arora</div>
+                <div className="text-xs text-[var(--muted)]">UPSC Hindi Panel</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Prateek */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#007aff", width: 44, height: 44, fontSize: 16 }}>P</div>
+              <div>
+                <div className="font-bold text-base">Prateek</div>
+                <div className="text-xs text-[var(--muted)]">UPSC Hindi Panel</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
       {/* English Panel */}
       <div className="card">
-        <div className="card-header"><h3>🌍 English Panel Educators</h3></div>
-        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          <div className="lb-row"><div className="avatar" style={{ background: "#007aff" }}>S</div><div className="lb-info"><div className="lb-name">Sarmad Sir</div><div className="lb-meta">UPSC English</div></div></div>
+        <div className="card-header"><h3>🌍 English Panel</h3></div>
+        <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+          <div className="flex items-center gap-3">
+            <div className="avatar" style={{ background: "#007aff", width: 44, height: 44, fontSize: 16 }}>S</div>
+            <div>
+              <div className="font-bold text-base">Sarmad Sir</div>
+              <div className="text-xs text-[var(--muted)]">UPSC English Panel Educator</div>
+            </div>
+          </div>
         </div>
       </div>
 

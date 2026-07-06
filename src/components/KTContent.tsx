@@ -268,17 +268,49 @@ function K12Tab() {
   return (
     <>
       <div className="card" style={{ borderColor: "rgba(255,149,0,0.15)" }}>
-        <div className="flex items-center gap-3 mb-4"><span className="text-3xl">📚</span><div><h3 className="text-lg font-bold">K12 Category</h3><p className="text-xs text-[var(--muted)]">POC: Sayam Batra & Adishreya Lal</p></div></div>
+        <div className="flex items-center gap-3 mb-4"><span className="text-3xl">📚</span><div><h3 className="text-lg font-bold">K12 Category (Class 6-12)</h3><p className="text-xs text-[var(--muted)]">POC: Sayam Batra & Adishreya Lal</p></div></div>
       </div>
 
+      {/* Educators */}
       <div className="card">
-        <div className="card-header"><h3>ℹ️ About K12</h3></div>
-        <p className="text-sm text-[var(--muted)]">K12 covers content for students from Class 1 to Class 12 (non-competitive exam content). This is jointly managed by Sayam and Adishreya.</p>
+        <div className="card-header"><h3>👨‍🏫 K12 Educators</h3></div>
+        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
+          <div className="lb-row"><div className="avatar" style={{ background: "#ff9500" }}>J</div><div className="lb-info"><div className="lb-name">Juhi Mam</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#5856d6" }}>A</div><div className="lb-info"><div className="lb-name">Ayush Sir</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#ff2d55" }}>S</div><div className="lb-info"><div className="lb-name">Saniya Mam</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#34c759" }}>A</div><div className="lb-info"><div className="lb-name">Abhinay Sir</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#007aff" }}>A</div><div className="lb-info"><div className="lb-name">Alok Sir</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#00c7be" }}>N</div><div className="lb-info"><div className="lb-name">Nikita Mam</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#ff2d55" }}>S</div><div className="lb-info"><div className="lb-name">Shivangi Mam</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#5856d6" }}>A</div><div className="lb-info"><div className="lb-name">Aryan Sir</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#ff9500" }}>P</div><div className="lb-info"><div className="lb-name">Prem Sir</div><div className="lb-meta">K12 Educator</div></div></div>
+          <div className="lb-row"><div className="avatar" style={{ background: "#34c759" }}>K</div><div className="lb-info"><div className="lb-name">Kumar Sir</div><div className="lb-meta">K12 Educator</div></div></div>
+        </div>
       </div>
 
+      {/* Fan Pages */}
       <div className="card">
-        <div className="card-header"><h3>📺 K12 Fan Pages</h3></div>
-        <p className="text-sm text-[var(--muted)]">Fan pages for K12 category coming soon. Contact Sayam or Adishreya for details.</p>
+        <div className="card-header"><h3>📺 K12 Fan Pages (5 Channels)</h3></div>
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead><tr><th>#</th><th>Channel Name</th><th>Link</th></tr></thead>
+            <tbody>
+              {[
+                { name: "10th Titans Army", url: "https://www.youtube.com/@10thTitansArmy10" },
+                { name: "Marks On", url: "https://www.youtube.com/@MarksOn21" },
+                { name: "Avengerzs Army", url: "https://www.youtube.com/@AvengerzsArmy" },
+                { name: "Boards ke Baahubali", url: "https://www.youtube.com/@BoardkeBaahubali" },
+                { name: "Unacademy Pookies", url: "https://www.youtube.com/@UnacademyPookies" },
+              ].map((ch, i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td className="font-medium">{ch.name}</td>
+                  <td><a href={ch.url} target="_blank" className="hover:text-[var(--red)] text-xs">{ch.url.replace("https://www.youtube.com/", "")}</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

@@ -103,13 +103,6 @@ export default async function ManagerDashboard() {
               <div className="lb-stats">
                 <span>👥 {row.subscribers.toLocaleString()}</span>
                 <span>👁 {row.views.toLocaleString()}</span>
-                <span className={`eng-badge ${row.avgEng >= 10 ? "green" : row.avgEng >= 3 ? "orange" : "red"}`}>
-                  {row.avgEng}%
-                </span>
-              </div>
-              <div className="lb-score">
-                <div className="score-val">{row.score.toLocaleString()}</div>
-                <div className="score-label">score</div>
               </div>
             </div>
           ))}

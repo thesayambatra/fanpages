@@ -275,20 +275,81 @@ function NEETTab() {
       {/* Team Legends */}
       <div className="card">
         <div className="card-header"><h3>🏆 Team Legends</h3></div>
-        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          <div className="lb-row"><div className="avatar" style={{ background: "#ff2d55" }}>S</div><div className="lb-info"><div className="lb-name">Seep Pahuja</div><div className="lb-meta">Team Legends</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#5856d6" }}>A</div><div className="lb-info"><div className="lb-name">Akansha Mam</div><div className="lb-meta">Team Legends</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#ff9500" }}>P</div><div className="lb-info"><div className="lb-name">Pranav Pundrik</div><div className="lb-meta">Team Legends</div></div></div>
+        <div className="space-y-4">
+
+          {/* Seep Pahuja */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#ff2d55", width: 44, height: 44, fontSize: 16 }}>S</div>
+              <div>
+                <div className="font-bold text-base">Seep Pahuja</div>
+                <div className="text-xs text-[var(--muted)]">Motivational · Best NCERT Concepts</div>
+              </div>
+              <span className="tag ml-auto">Biology</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• M.Sc (Hons) Gold Medalist · B.Ed</li>
+              <li>• 10+ Years of Experience</li>
+              <li>• Mentored Lacs of students</li>
+              <li>• Produced Top Rankers — AIR 7, 9, 143, 267</li>
+              <li>• ⭐ Needs Individual Fanpage</li>
+            </ul>
+          </div>
+
+          {/* Prateek Jain */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#ff9500", width: 44, height: 44, fontSize: 16 }}>P</div>
+              <div>
+                <div className="font-bold text-base">Prateek Jain</div>
+                <div className="text-xs text-[var(--muted)]">Researcher under H.C. Verma</div>
+              </div>
+              <span className="tag ml-auto">Chemistry</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• Mentor to multiple single-digit rank holders</li>
+              <li>• Produced AIR 6, AIR 10 in IIT JEE/NEET</li>
+              <li>• Researcher under renowned scholar H.C. Verma</li>
+            </ul>
+          </div>
+
+          {/* Akanksha Karnwal */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#5856d6", width: 44, height: 44, fontSize: 16 }}>A</div>
+              <div>
+                <div className="font-bold text-base">Akanksha Karnwal</div>
+                <div className="text-xs text-[var(--muted)]">CSIR NET AIR 3</div>
+              </div>
+              <span className="tag ml-auto">Chemistry</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• Scholarship by Delhi University — 90%+ Topper</li>
+              <li>• BSc(H) Chemistry</li>
+              <li>• CSIR NET — AIR 3</li>
+            </ul>
+          </div>
+
         </div>
       </div>
 
       {/* Team GNT */}
       <div className="card">
         <div className="card-header"><h3>🌟 Team GNT</h3></div>
-        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          <div className="lb-row"><div className="avatar" style={{ background: "#34c759" }}>G</div><div className="lb-info"><div className="lb-name">Garima Goel</div><div className="lb-meta">Team GNT</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#00c7be" }}>T</div><div className="lb-info"><div className="lb-name">Tamanna</div><div className="lb-meta">Team GNT</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#007aff" }}>N</div><div className="lb-info"><div className="lb-name">Nitesh</div><div className="lb-meta">Team GNT</div></div></div>
+        <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="avatar" style={{ background: "#34c759", width: 44, height: 44, fontSize: 16 }}>G</div>
+            <div>
+              <div className="font-bold text-base">Garima Goel, Nitesh Devani, Tamanna</div>
+              <div className="text-xs text-[var(--muted)]">One of the Top NEET Online Educator Panels</div>
+            </div>
+            <span className="tag ml-auto">Biology · Chemistry · Physics</span>
+          </div>
+          <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+            <li>• Always taught together as one panel</li>
+            <li>• One of the Top NEET Online Educators</li>
+            <li>• ⭐ Needs Individual Fanpage</li>
+          </ul>
         </div>
       </div>
 

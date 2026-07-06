@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { logActivity } from "@/lib/activity";
 
 const COLORS = ["#ff9800","#795548","#607d8b","#e91e63","#00bcd4","#8bc34a","#673ab7"];
 
@@ -46,5 +47,6 @@ export async function POST(req: NextRequest) {
       avatarColor: COLORS[count % COLORS.length],
     },
   });
+  await logActivity(Number(user.id), "intern_created", `Created intern: ${fullName} (@${username})`);
   return NextResponse.json({ ok: true, id: intern.id });
 }

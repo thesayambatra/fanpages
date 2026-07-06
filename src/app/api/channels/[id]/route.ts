@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { refreshChannel } from "@/lib/db-helpers";
+import { logActivity } from "@/lib/activity";
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
@@ -13,11 +14,13 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   // Manager can delete any channel
   if (user.role === "manager") {
     await prisma.channel.delete({ where: { id: ch.id } });
+    await logActivity(Number(user.id), "channel_deleted", `Deleted: ${ch.channelName || ch.channelId}`);
     return NextResponse.json({ ok: true });
   }
   // Owner can delete their own channel
   if (ch.userId === Number(user.id)) {
     await prisma.channel.delete({ where: { id: ch.id } });
+    await logActivity(Number(user.id), "channel_deleted", `Deleted: ${ch.channelName || ch.channelId}`);
     return NextResponse.json({ ok: true });
   }
   // Employee can delete channels of their interns
@@ -25,6 +28,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const chOwner = await prisma.user.findUnique({ where: { id: ch.userId } });
     if (chOwner?.createdById === Number(user.id)) {
       await prisma.channel.delete({ where: { id: ch.id } });
+      await logActivity(Number(user.id), "channel_deleted", `Deleted: ${ch.channelName || ch.channelId}`);
       return NextResponse.json({ ok: true });
     }
   }
@@ -43,6 +47,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const body = await req.json();
   if (body.refresh) {
     await refreshChannel(ch.id);
+    await logActivity(Number(user.id), "channel_refreshed", `Refreshed: ${ch.channelName || ch.channelId}`);
     return NextResponse.json({ ok: true });
   }
   await prisma.channel.update({

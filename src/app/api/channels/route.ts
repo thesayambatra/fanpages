@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { extractChannelId, fetchChannelStats } from "@/lib/youtube";
 import { channelsVisibleTo, enrichChannel } from "@/lib/db-helpers";
+import { logActivity } from "@/lib/activity";
 
 // GET /api/channels — list channels visible to current user
 export async function GET(req: NextRequest) {
@@ -56,5 +57,6 @@ export async function POST(req: NextRequest) {
       },
     });
   }
+  await logActivity(Number(user.id), "channel_added", `Added channel: ${channelId} (${category || "no category"})`);
   return NextResponse.json({ ok: true, id: ch.id });
 }

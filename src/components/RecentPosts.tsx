@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { SaveVideoButton } from "./SaveVideoButton";
 
 function fmt(n: number) { return (n || 0).toLocaleString(); }
 function timeAgo(date: string) {
@@ -94,6 +95,7 @@ export function RecentPosts() {
                   <th>Likes</th>
                   <th>Comments</th>
                   <th>Type</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -121,6 +123,9 @@ export function RecentPosts() {
                       <span className={`tag ${v.isShort ? "!border-[var(--red)]/30 !text-[var(--red)]" : ""}`}>
                         {v.isShort ? "🩳 Short" : "🎬 Video"}
                       </span>
+                    </td>
+                    <td>
+                      <SaveVideoButton video={{ videoId: v.videoId, title: v.title, channelName: v.channelName, thumbnail: v.thumbnail, url: v.url, views: v.views, likes: v.likes, comments: v.comments, published: v.publishedAt }} />
                     </td>
                   </tr>
                 ))}

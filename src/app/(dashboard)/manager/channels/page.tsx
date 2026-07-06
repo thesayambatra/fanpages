@@ -10,6 +10,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
 
   const employeeId = searchParams.employee_id || "all";
   const category = searchParams.category || "all";
+  const month = searchParams.month || "all";
 
   let channels;
   if (employeeId !== "all") {
@@ -27,17 +28,38 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
     channels = await prisma.channel.findMany({ include: { user: true } });
   }
 
-  const enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
-  const filtered = category !== "all" ? enriched.filter(c => c.category === category) : enriched;
-  filtered.sort((a, b) => b.subscribers - a.subscribers);
+  let enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
+
+  // Filter by category
+  if (category !== "all") {
+    enriched = enriched.filter(c => c.category === category);
+  }
+
+  // Filter by month (added date)
+  if (month !== "all") {
+    enriched = enriched.filter(c => {
+      const date = new Date(c.fetchedAt);
+      const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      return monthStr === month;
+    });
+  }
+
+  enriched.sort((a, b) => b.totalViews - a.totalViews);
 
   const employees = await prisma.user.findMany({ where: { role: "employee" } });
-  const categories = [...new Set(enriched.map(c => c.category).filter(Boolean))];
+  const categories = ["JEE", "K12", "UPSC", "NEET"];
+
+  // Get unique months from data
+  const allChannels = await prisma.channel.findMany();
+  const months = [...new Set(allChannels.map(c => {
+    const d = c.addedAt;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  }))].sort().reverse();
 
   return (
     <>
       <div className="page-header">
-        <h2>All Channels ({filtered.length})</h2>
+        <h2>All Channels ({enriched.length})</h2>
       </div>
 
       <div className="card filter-bar">
@@ -50,6 +72,10 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <option value="all">All Categories</option>
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
+          <select name="month" defaultValue={month} className="form-input">
+            <option value="all">All Months</option>
+            {months.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
           <button type="submit" className="btn-primary btn-sm">Filter</button>
         </form>
       </div>
@@ -60,11 +86,11 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <thead>
               <tr>
                 <th>#</th><th>Channel</th><th>Category</th><th>Subscribers</th>
-                <th>Views</th><th>Videos</th><th>Engagement</th><th>Added By</th><th>Updated</th>
+                <th>Views</th><th>Videos</th><th>Managed By</th><th>Added</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((ch, i) => (
+              {enriched.map((ch, i) => (
                 <tr key={ch.id}>
                   <td>{i + 1}</td>
                   <td>
@@ -76,13 +102,8 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
                   </td>
                   <td>{ch.category ? <span className="tag">{ch.category}</span> : "—"}</td>
                   <td>{ch.subscribers.toLocaleString()}</td>
-                  <td>{ch.totalViews.toLocaleString()}</td>
+                  <td className="font-bold text-lg" style={{ color: "var(--red)" }}>{ch.totalViews.toLocaleString()}</td>
                   <td>{ch.videoCount}</td>
-                  <td>
-                    <span className={`eng-badge ${ch.engagementRate >= 10 ? "green" : ch.engagementRate >= 3 ? "orange" : "red"}`}>
-                      {ch.engagementRate}%
-                    </span>
-                  </td>
                   <td>{ch.addedBy}</td>
                   <td className="text-xs text-[var(--muted)]">{new Date(ch.fetchedAt).toLocaleDateString()}</td>
                 </tr>

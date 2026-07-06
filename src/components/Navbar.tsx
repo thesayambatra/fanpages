@@ -25,6 +25,7 @@ export function Navbar() {
           { href: "/manager/reports", label: "Reports" },
           { href: "/manager/activity", label: "Activity" },
           { href: "/team", label: "Team" },
+          { href: "/gallery", label: "Gallery" },
           { href: "/kt", label: "KT Doc" },
         ]
       : role === "employee"
@@ -34,12 +35,14 @@ export function Navbar() {
             { href: "/employee/growth", label: "Growth" },
             { href: "/employee/interns", label: "Interns" },
             { href: "/team", label: "Team" },
+            { href: "/gallery", label: "Gallery" },
             { href: "/kt", label: "KT Doc" },
           ]
         : [
             { href: "/intern", label: "Dashboard" },
             { href: "/intern/channels", label: "My Channels" },
             { href: "/team", label: "Team" },
+            { href: "/gallery", label: "Gallery" },
             { href: "/kt", label: "KT Doc" },
           ];
 

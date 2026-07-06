@@ -26,6 +26,7 @@ model User {
   savedReels  SavedReel[]
   notesGiven  InternNote[] @relation("NotesByReviewer")
   notesAbout  InternNote[] @relation("NotesAboutIntern")
+  galleryImages GalleryImage[] @relation("GalleryUploads")
 }
 
 model Channel {
@@ -100,4 +101,13 @@ model ActivityLog {
   action    String
   details   String   @default("")
   createdAt DateTime @default(now())
+}
+
+model GalleryImage {
+  id          Int      @id @default(autoincrement())
+  uploadedById Int
+  uploadedBy  User     @relation("GalleryUploads", fields: [uploadedById], references: [id])
+  imageUrl    String
+  caption     String   @default("")
+  createdAt   DateTime @default(now())
 }

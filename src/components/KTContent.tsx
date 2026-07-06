@@ -112,7 +112,7 @@ function OverviewTab() {
             <tbody>
               <tr><td><span className="badge manager">Manager</span></td><td className="font-semibold">Basudha Parija</td><td className="text-[var(--muted)]">Overall team management, reviews, approvals</td></tr>
               <tr><td><span className="badge employee">Employee</span></td><td className="font-semibold">Sayam Batra</td><td className="text-[var(--muted)]">POC for JEE & K12</td></tr>
-              <tr><td><span className="badge employee">Employee</span></td><td className="font-semibold">Adishreya Lal</td><td className="text-[var(--muted)]">POC for NEET & K12</td></tr>
+              <tr><td><span className="badge employee">Employee</span></td><td className="font-semibold">Adhishreya Lal</td><td className="text-[var(--muted)]">POC for NEET & K12</td></tr>
               <tr><td><span className="badge employee">Employee</span></td><td className="font-semibold">Sudhanshu Sharma</td><td className="text-[var(--muted)]">POC for UPSC</td></tr>
             </tbody>
           </table>
@@ -124,9 +124,9 @@ function OverviewTab() {
         <div className="card-header"><h3>🏷️ Category POC</h3></div>
         <div className="stat-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
           <div className="stat-card" style={{ borderColor: "rgba(255,45,85,0.2)" }}><div className="stat-icon">⚗️</div><div className="font-bold mb-1">JEE</div><div className="text-xs text-[var(--muted)]">POC: Sayam Batra</div></div>
-          <div className="stat-card" style={{ borderColor: "rgba(0,199,190,0.2)" }}><div className="stat-icon">🧬</div><div className="font-bold mb-1">NEET</div><div className="text-xs text-[var(--muted)]">POC: Adishreya Lal</div></div>
+          <div className="stat-card" style={{ borderColor: "rgba(0,199,190,0.2)" }}><div className="stat-icon">🧬</div><div className="font-bold mb-1">NEET</div><div className="text-xs text-[var(--muted)]">POC: Adhishreya Lal</div></div>
           <div className="stat-card" style={{ borderColor: "rgba(88,86,214,0.2)" }}><div className="stat-icon">🏛️</div><div className="font-bold mb-1">UPSC</div><div className="text-xs text-[var(--muted)]">POC: Sudhanshu Sharma</div></div>
-          <div className="stat-card" style={{ borderColor: "rgba(255,149,0,0.2)" }}><div className="stat-icon">📚</div><div className="font-bold mb-1">K12</div><div className="text-xs text-[var(--muted)]">POC: Sayam & Adishreya</div></div>
+          <div className="stat-card" style={{ borderColor: "rgba(255,149,0,0.2)" }}><div className="stat-icon">📚</div><div className="font-bold mb-1">K12</div><div className="text-xs text-[var(--muted)]">POC: Sayam & Adhishreya</div></div>
         </div>
       </div>
 
@@ -188,7 +188,7 @@ function NEETTab() {
   return (
     <>
       <div className="card" style={{ borderColor: "rgba(0,199,190,0.15)" }}>
-        <div className="flex items-center gap-3 mb-4"><span className="text-3xl">🧬</span><div><h3 className="text-lg font-bold">NEET Category</h3><p className="text-xs text-[var(--muted)]">POC: Adishreya Lal</p></div></div>
+        <div className="flex items-center gap-3 mb-4"><span className="text-3xl">🧬</span><div><h3 className="text-lg font-bold">NEET Category</h3><p className="text-xs text-[var(--muted)]">POC: Adhishreya Lal</p></div></div>
       </div>
 
       {/* Team Legends */}
@@ -223,7 +223,7 @@ function NEETTab() {
 
       <div className="card">
         <div className="card-header"><h3>📺 NEET Fan Pages</h3></div>
-        <p className="text-sm text-[var(--muted)]">Fan pages for NEET educators coming soon. Contact Adishreya for details.</p>
+        <p className="text-sm text-[var(--muted)]">Fan pages for NEET educators coming soon. Contact Adhishreya for details.</p>
       </div>
     </>
   );
@@ -268,7 +268,7 @@ function K12Tab() {
   return (
     <>
       <div className="card" style={{ borderColor: "rgba(255,149,0,0.15)" }}>
-        <div className="flex items-center gap-3 mb-4"><span className="text-3xl">📚</span><div><h3 className="text-lg font-bold">K12 Category (Class 6-12)</h3><p className="text-xs text-[var(--muted)]">POC: Sayam Batra & Adishreya Lal</p></div></div>
+        <div className="flex items-center gap-3 mb-4"><span className="text-3xl">📚</span><div><h3 className="text-lg font-bold">K12 Category (Class 6-12)</h3><p className="text-xs text-[var(--muted)]">POC: Sayam Batra & Adhishreya Lal</p></div></div>
       </div>
 
       {/* Educators */}

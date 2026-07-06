@@ -12,7 +12,7 @@ export async function ensureSeeded() {
     { username: "basudha", password: "Basudha@123", role: "manager", fullName: "Basudha", avatarColor: "#ff0000" },
     { username: "sayam", password: "sayam2005", role: "employee", fullName: "Sayam", avatarColor: "#9c27b0" },
     { username: "sudhanshu", password: "Sudhanshu@123", role: "employee", fullName: "Sudhanshu", avatarColor: "#3f51b5" },
-    { username: "adishreya", password: "Adishreya@123", role: "employee", fullName: "Adishreya", avatarColor: "#009688" },
+    { username: "adhishreya", password: "Adhishreya@123", role: "employee", fullName: "Adhishreya", avatarColor: "#009688" },
   ];
 
   for (const u of users) {

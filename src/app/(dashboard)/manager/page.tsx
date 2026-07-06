@@ -55,6 +55,19 @@ export default async function ManagerDashboard() {
         <Link href="/api/export" className="btn-green">⬇ Export Excel</Link>
       </div>
 
+      {/* Quick Links */}
+      <div className="card" style={{ padding: "0.75rem 1rem", marginBottom: "1.5rem" }}>
+        <div className="flex gap-2 flex-wrap">
+          <Link href="/manager/growth" className="btn-outline btn-sm">📈 Growth</Link>
+          <Link href="/manager/top-videos" className="btn-outline btn-sm">🎬 Top Videos</Link>
+          <Link href="/manager/compare" className="btn-outline btn-sm">⚖️ Compare</Link>
+          <Link href="/manager/activity" className="btn-outline btn-sm">🕒 Activity</Link>
+          <Link href="/manager/reports" className="btn-outline btn-sm">📋 Reports</Link>
+          <Link href="/gallery" className="btn-outline btn-sm">🖼️ Gallery</Link>
+          <Link href="/saved" className="btn-outline btn-sm">💾 Saved</Link>
+        </div>
+      </div>
+
       <div className="stat-grid">
         <div className="stat-card red">
           <div className="stat-icon">📺</div>

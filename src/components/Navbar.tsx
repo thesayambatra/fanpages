@@ -16,8 +16,8 @@ export function Navbar() {
       ? [
           { href: "/manager", label: "Dashboard" },
           { href: "/manager/channels", label: "Channels" },
+          { href: "/manager/analytics", label: "Analytics" },
           { href: "/team", label: "Team" },
-          { href: "/gallery", label: "Gallery" },
           { href: "/kt", label: "KT Doc" },
         ]
       : role === "employee"
@@ -32,7 +32,6 @@ export function Navbar() {
             { href: "/intern", label: "Dashboard" },
             { href: "/intern/channels", label: "Channels" },
             { href: "/team", label: "Team" },
-            { href: "/gallery", label: "Gallery" },
             { href: "/kt", label: "KT Doc" },
           ];
 

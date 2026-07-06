@@ -153,12 +153,93 @@ function JEETab() {
 
       {/* Educators */}
       <div className="card">
-        <div className="card-header"><h3>👨‍🏫 JEE Educators</h3></div>
-        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          <div className="lb-row"><div className="avatar" style={{ background: "#ff2d55" }}>P</div><div className="lb-info"><div className="lb-name">Prashant Jain</div><div className="lb-meta">AIR 42 · IIT Bombay</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#5856d6" }}>D</div><div className="lb-info"><div className="lb-name">Dhairya Sandhayana</div><div className="lb-meta">AIR 29 · Queen of Maths</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#ff9500" }}>A</div><div className="lb-info"><div className="lb-name">Arvind Kalia Sir</div><div className="lb-meta">JEE Educator</div></div></div>
-          <div className="lb-row"><div className="avatar" style={{ background: "#34c759" }}>K</div><div className="lb-info"><div className="lb-name">Kashif Alam Sir</div><div className="lb-meta">JEE Educator</div></div></div>
+        <div className="card-header"><h3>👨‍🏫 JEE Educators — Detailed Profiles</h3></div>
+        <div className="space-y-4">
+
+          {/* Prashant Jain */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#ff2d55", width: 44, height: 44, fontSize: 16 }}>P</div>
+              <div>
+                <div className="font-bold text-base">Prashant Jain</div>
+                <div className="text-xs text-[var(--muted)]">God of Maths · Fastest Solver · God of Manipulations</div>
+              </div>
+              <span className="tag ml-auto">Mathematics</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• AIR 42, IIT Bombay</li>
+              <li>• Gold Medallist Chemistry Olympiad 2008</li>
+              <li>• Known as &quot;God of Maths&quot; & &quot;Fastest Solver&quot;</li>
+              <li>• ⭐ Needs Individual Fanpage</li>
+            </ul>
+          </div>
+
+          {/* Dhairya Sandhyana */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#5856d6", width: 44, height: 44, fontSize: 16 }}>D</div>
+              <div>
+                <div className="font-bold text-base">Dhairya Sandhyana</div>
+                <div className="text-xs text-[var(--muted)]">Queen of Maths · Girl Topper · Female Mentor</div>
+              </div>
+              <span className="tag ml-auto">Mathematics</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• 1 Cr Package · IIT Delhi CSE Graduate</li>
+              <li>• AIR 29 in JEE Advanced 2014</li>
+              <li>• Passion: Teaching & Mathematics</li>
+              <li>• Known as &quot;Queen of Maths&quot;</li>
+              <li>• Girl Motivation · Mentorship · Female Mentor</li>
+              <li>• ⭐ Needs Individual Fanpage</li>
+            </ul>
+          </div>
+
+          {/* Arvind Kalia */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#ff9500", width: 44, height: 44, fontSize: 16 }}>A</div>
+              <div>
+                <div className="font-bold text-base">Arvind Kalia Sir</div>
+                <div className="text-xs text-[var(--muted)]">Masters Bhai · Aapka Bhai · Love You Shera</div>
+              </div>
+              <span className="tag ml-auto">Mathematics</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• IIT Delhi Masters</li>
+              <li>• Emotional + Motivational · Father Figure</li>
+              <li>• Known as &quot;Bhai&quot; among students</li>
+              <li>• ⭐ Needs Individual Fanpage</li>
+            </ul>
+          </div>
+
+          {/* Vishal Sir */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#34c759", width: 44, height: 44, fontSize: 16 }}>V</div>
+              <div>
+                <div className="font-bold text-base">Vishal Sir</div>
+                <div className="text-xs text-[var(--muted)]">Quick Shortcuts + Motivational Chemistry</div>
+              </div>
+              <span className="tag ml-auto">Chemistry</span>
+            </div>
+            <ul className="text-xs text-[var(--muted)] space-y-1 ml-14">
+              <li>• Chemistry Faculty</li>
+              <li>• Known for quick shortcuts</li>
+              <li>• Motivational teaching style</li>
+            </ul>
+          </div>
+
+          {/* Kashif Alam */}
+          <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)" }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="avatar" style={{ background: "#007aff", width: 44, height: 44, fontSize: 16 }}>K</div>
+              <div>
+                <div className="font-bold text-base">Kashif Alam Sir</div>
+                <div className="text-xs text-[var(--muted)]">JEE Educator</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

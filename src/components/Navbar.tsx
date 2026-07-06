@@ -21,10 +21,10 @@ export function Navbar() {
           { href: "/manager/top-videos", label: "Top Videos" },
           { href: "/manager/compare", label: "Compare" },
           { href: "/manager/quick-open", label: "Quick Open" },
-          { href: "/manager/team", label: "Team" },
           { href: "/manager/saved-reels", label: "Saved Reels" },
           { href: "/manager/reports", label: "Reports" },
           { href: "/manager/activity", label: "Activity" },
+          { href: "/team", label: "Team" },
           { href: "/kt", label: "KT Doc" },
         ]
       : role === "employee"
@@ -33,11 +33,13 @@ export function Navbar() {
             { href: "/employee/channels", label: "My Channels" },
             { href: "/employee/growth", label: "Growth" },
             { href: "/employee/interns", label: "Interns" },
+            { href: "/team", label: "Team" },
             { href: "/kt", label: "KT Doc" },
           ]
         : [
             { href: "/intern", label: "Dashboard" },
             { href: "/intern/channels", label: "My Channels" },
+            { href: "/team", label: "Team" },
             { href: "/kt", label: "KT Doc" },
           ];
 

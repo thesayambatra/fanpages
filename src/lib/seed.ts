@@ -5,9 +5,7 @@ let seeded = false;
 
 export async function ensureSeeded() {
   if (seeded) return;
-  const count = await prisma.user.count();
-  if (count > 0) { seeded = true; return; }
-
+  
   const users = [
     { username: "basudha", password: "Basudha@123", role: "manager", fullName: "Basudha", avatarColor: "#ff0000" },
     { username: "cbo", password: "CBO@review2024", role: "manager", fullName: "CBO Review", avatarColor: "#ff9500" },
@@ -17,12 +15,10 @@ export async function ensureSeeded() {
   ];
 
   for (const u of users) {
-    await prisma.user.upsert({
-      where: { username: u.username },
-      update: {},
-      create: { ...u, password: await bcrypt.hash(u.password, 10) },
-    });
+    const exists = await prisma.user.findUnique({ where: { username: u.username } });
+    if (!exists) {
+      await prisma.user.create({ data: { ...u, password: await bcrypt.hash(u.password, 10) } });
+    }
   }
   seeded = true;
-  console.log("Auto-seeded default users");
 }

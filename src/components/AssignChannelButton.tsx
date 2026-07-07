@@ -39,6 +39,17 @@ export function AssignChannelButton({ channelId }: { channelId: number }) {
   return (
     <div className="absolute top-7 right-0 bg-[var(--bg)] border border-[var(--glass-border)] rounded-xl p-3 z-20 shadow-xl min-w-[180px]" style={{ backdropFilter: "blur(20px)" }}>
       <p className="text-xs font-semibold text-[var(--muted)] mb-2">Assign to:</p>
+
+      {/* Take back / Assign to me */}
+      <button
+        onClick={() => assign(-1)}
+        disabled={loading}
+        className="w-full text-left px-2 py-1.5 rounded-lg text-xs hover:bg-[rgba(255,45,85,0.05)] transition-all flex items-center gap-2 mb-1 font-semibold"
+        style={{ borderBottom: "1px solid var(--glass-border)", paddingBottom: "8px", marginBottom: "6px" }}
+      >
+        ↩️ Take back (assign to me)
+      </button>
+
       {interns.length === 0 ? (
         <p className="text-xs text-[var(--muted)]">No interns found</p>
       ) : (

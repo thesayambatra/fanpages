@@ -18,6 +18,15 @@ export async function POST(req: NextRequest) {
   const channel = await prisma.channel.findUnique({ where: { id: Number(channelId) } });
   if (!channel) return NextResponse.json({ error: "Channel not found" }, { status: 404 });
 
+  // If internId is -1, assign back to current user (revert)
+  if (Number(internId) === -1) {
+    await prisma.channel.update({
+      where: { id: Number(channelId) },
+      data: { userId: Number(user.id) },
+    });
+    return NextResponse.json({ ok: true });
+  }
+
   const intern = await prisma.user.findUnique({ where: { id: Number(internId) } });
   if (!intern) return NextResponse.json({ error: "Intern not found" }, { status: 404 });
 

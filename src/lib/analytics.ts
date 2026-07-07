@@ -104,7 +104,9 @@ export async function fetchStudioAnalytics(
     try {
       const impRes = await q("impressions,impressionClickThroughRate");
       impressionsData = parseOverview(impRes.data);
-    } catch { /* impressions not available for this channel */ }
+    } catch (e: any) {
+      console.log("Impressions not available for this channel:", e.message?.slice(0, 100));
+    }
 
     let shortsOverview = null, shortsDaily = null;
     try {

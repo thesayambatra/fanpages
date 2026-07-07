@@ -122,6 +122,8 @@ export function StudioDashboard({ channelDbId, channelName }: { channelDbId: num
           <button onClick={() => { const r = range28(); setFrom(r.from); setTo(r.to); fetchData(r.from, r.to); }} className="btn-outline btn-sm">28 Days</button>
           <button onClick={() => { const now = new Date(); const f = getDateStr(new Date(now.getTime() - 7*86400000)); setFrom(f); setTo(getDateStr(now)); fetchData(f, getDateStr(now)); }} className="btn-outline btn-sm">7 Days</button>
           <button onClick={() => { const now = new Date(); const f = getDateStr(new Date(now.getTime() - 90*86400000)); setFrom(f); setTo(getDateStr(now)); fetchData(f, getDateStr(now)); }} className="btn-outline btn-sm">90 Days</button>
+          <button onClick={() => { const now = new Date(); const f = getDateStr(new Date(now.getFullYear(), now.getMonth(), 1)); setFrom(f); setTo(getDateStr(now)); fetchData(f, getDateStr(now)); }} className="btn-outline btn-sm">This Month</button>
+          <button onClick={() => { const now = new Date(); const f = getDateStr(new Date(now.getFullYear(), now.getMonth()-1, 1)); const t = getDateStr(new Date(now.getFullYear(), now.getMonth(), 0)); setFrom(f); setTo(t); fetchData(f, t); }} className="btn-outline btn-sm">Last Month</button>
         </div>
       </div>
 

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   // Get all channels with at least 2 snapshots to calculate growth
   const channels = await prisma.channel.findMany({

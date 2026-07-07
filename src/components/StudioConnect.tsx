@@ -6,9 +6,9 @@ export function StudioConnect({ channelDbId, hasToken }: { channelDbId: number; 
 
   if (hasToken) {
     return (
-      <div className="flex items-center gap-2">
-        <a href={`/intern/studio?channelId=${channelDbId}`} className="btn-outline btn-sm" style={{ color: "#4caf50", borderColor: "#4caf5044" }}>
-          📊 View Studio
+      <div className="flex items-center gap-1">
+        <a href={`/intern/studio?channelId=${channelDbId}`} className="btn-outline btn-sm text-xs whitespace-nowrap" style={{ color: "#4caf50", borderColor: "#4caf5044" }}>
+          📊 Studio
         </a>
         <button
           onClick={async () => {
@@ -20,7 +20,7 @@ export function StudioConnect({ channelDbId, hasToken }: { channelDbId: number; 
             });
             router.refresh();
           }}
-          className="btn-icon" title="Disconnect" style={{ width: 24, height: 24, fontSize: 10 }}
+          className="btn-icon" title="Disconnect" style={{ width: 22, height: 22, fontSize: 10 }}
         >
           🔌
         </button>
@@ -29,8 +29,8 @@ export function StudioConnect({ channelDbId, hasToken }: { channelDbId: number; 
   }
 
   return (
-    <a href={`/api/oauth?channelId=${channelDbId}`} className="btn-outline btn-sm" style={{ color: "#ff9800", borderColor: "#ff980044" }}>
-      🔗 Connect Google
+    <a href={`/api/oauth?channelId=${channelDbId}`} className="btn-outline btn-sm text-xs whitespace-nowrap" style={{ color: "#ff9800", borderColor: "#ff980044" }}>
+      🔗 Connect
     </a>
   );
 }

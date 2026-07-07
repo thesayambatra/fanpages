@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EditCategoryButton } from "./EditCategoryButton";
+import { AssignChannelButton } from "./AssignChannelButton";
 
 export function ChannelActions({ channelId, category }: { channelId: number; category?: string }) {
   const router = useRouter();
@@ -27,6 +28,7 @@ export function ChannelActions({ channelId, category }: { channelId: number; cat
   return (
     <div className="flex gap-1 relative">
       <a href={`/employee/stats?channelId=${channelId}`} className="btn-icon" title="View Stats" style={{ color: "#4caf50", borderColor: "#4caf5044" }}>📊</a>
+      <AssignChannelButton channelId={channelId} />
       <EditCategoryButton channelId={channelId} currentCategory={category || ""} />
       <button onClick={refresh} disabled={loading} className="btn-icon" title="Refresh">
         {loading ? "⏳" : "↻"}

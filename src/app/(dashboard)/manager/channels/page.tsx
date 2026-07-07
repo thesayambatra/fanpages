@@ -3,6 +3,8 @@ import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { enrichChannel } from "@/lib/db-helpers";
 import { PerformanceBadges } from "@/components/PerformanceBadges";
+import { AddChannelForm } from "@/components/AddChannelForm";
+import { ChannelActions } from "@/components/ChannelActions";
 
 export default async function ManagerChannels({ searchParams }: { searchParams: { [key: string]: string } }) {
   const session = await requireRole("manager");
@@ -62,6 +64,8 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         <h2>All Channels ({enriched.length})</h2>
       </div>
 
+      <AddChannelForm />
+
       <div className="card filter-bar">
         <form className="filter-form" method="GET">
           <select name="employee_id" defaultValue={employeeId} className="form-input">
@@ -86,7 +90,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <thead>
               <tr>
                 <th>#</th><th>Channel</th><th>Category</th><th>Subscribers</th>
-                <th>Views</th><th>Videos</th><th>Managed By</th><th>Added</th>
+                <th>Views</th><th>Videos</th><th>Managed By</th><th>Added</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -106,6 +110,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
                   <td>{ch.videoCount}</td>
                   <td>{ch.addedBy}</td>
                   <td className="text-xs text-[var(--muted)]">{new Date(ch.fetchedAt).toLocaleDateString()}</td>
+                  <td><ChannelActions channelId={ch.id} category={ch.category} /></td>
                 </tr>
               ))}
             </tbody>

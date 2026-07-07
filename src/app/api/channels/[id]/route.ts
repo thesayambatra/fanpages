@@ -11,8 +11,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const ch = await prisma.channel.findUnique({ where: { id: Number(params.id) } });
   if (!ch) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Manager can delete any channel
-  if (user.role === "manager") {
+  // Manager/CBO can delete any channel
+  if (user.role === "manager" || user.role === "cbo") {
     await prisma.channel.delete({ where: { id: ch.id } });
     await logActivity(Number(user.id), "channel_deleted", `Deleted: ${ch.channelName || ch.channelId}`);
     return NextResponse.json({ ok: true });
@@ -41,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const user = session.user as any;
   const ch = await prisma.channel.findUnique({ where: { id: Number(params.id) } });
   if (!ch) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (ch.userId !== Number(user.id) && !["manager", "employee"].includes(user.role)) {
+  if (ch.userId !== Number(user.id) && !["manager", "employee", "cbo"].includes(user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const body = await req.json();

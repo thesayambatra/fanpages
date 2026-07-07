@@ -5,6 +5,7 @@ import { enrichChannel } from "@/lib/db-helpers";
 import { PerformanceBadges } from "@/components/PerformanceBadges";
 import { AddChannelForm } from "@/components/AddChannelForm";
 import { ChannelActions } from "@/components/ChannelActions";
+import { BulkAddChannels } from "@/components/BulkAddChannels";
 
 export default async function ManagerChannels({ searchParams }: { searchParams: { [key: string]: string } }) {
   const session = await requireRole("manager");
@@ -65,6 +66,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
       </div>
 
       <AddChannelForm />
+      <BulkAddChannels />
 
       <div className="card filter-bar">
         <form className="filter-form" method="GET">

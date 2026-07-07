@@ -5,6 +5,7 @@ import { latestSnapshot } from "@/lib/db-helpers";
 import { AddChannelForm } from "@/components/AddChannelForm";
 import { ChannelActions } from "@/components/ChannelActions";
 import { StudioConnect } from "@/components/StudioConnect";
+import { BulkAddChannels } from "@/components/BulkAddChannels";
 
 export default async function EmployeeChannels() {
   const session = await requireRole("employee");
@@ -29,6 +30,7 @@ export default async function EmployeeChannels() {
       </div>
 
       <AddChannelForm />
+      <BulkAddChannels />
 
       <div className="card">
         <div className="card-header">

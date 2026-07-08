@@ -6,6 +6,7 @@ import { PerformanceBadges } from "@/components/PerformanceBadges";
 import { AddChannelForm } from "@/components/AddChannelForm";
 import { ChannelActions } from "@/components/ChannelActions";
 import { BulkAddChannels } from "@/components/BulkAddChannels";
+import { StudioConnect } from "@/components/StudioConnect";
 
 export default async function ManagerChannels({ searchParams }: { searchParams: { [key: string]: string } }) {
   const session = await requireRole("manager");
@@ -13,51 +14,50 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
 
   const employeeId = searchParams.employee_id || "all";
   const category = searchParams.category || "all";
-  const month = searchParams.month || "all";
+  const dateFrom = searchParams.from || "";
+  const dateTo = searchParams.to || "";
 
-  let channels;
+  // Build query filter
+  const whereFilter: any = {};
   if (employeeId !== "all") {
     const emp = await prisma.user.findUnique({ where: { id: Number(employeeId) } });
     if (emp) {
       const internIds = (await prisma.user.findMany({ where: { createdById: emp.id } })).map(i => i.id);
-      channels = await prisma.channel.findMany({
-        where: { userId: { in: [emp.id, ...internIds] } },
-        include: { user: true },
-      });
-    } else {
-      channels = await prisma.channel.findMany({ include: { user: true } });
+      whereFilter.userId = { in: [emp.id, ...internIds] };
     }
-  } else {
-    channels = await prisma.channel.findMany({ include: { user: true } });
   }
-
-  let enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
-
-  // Filter by category
   if (category !== "all") {
-    enriched = enriched.filter(c => c.category === category);
+    whereFilter.category = category;
+  }
+  if (dateFrom) {
+    whereFilter.addedAt = { ...whereFilter.addedAt, gte: new Date(dateFrom) };
+  }
+  if (dateTo) {
+    whereFilter.addedAt = { ...whereFilter.addedAt, lte: new Date(dateTo + "T23:59:59") };
   }
 
-  // Filter by month (added date)
-  if (month !== "all") {
-    enriched = enriched.filter(c => {
-      const date = new Date(c.fetchedAt);
-      const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-      return monthStr === month;
-    });
-  }
+  const channels = await prisma.channel.findMany({
+    where: whereFilter,
+    include: { user: true, oauthToken: true },
+  });
 
+  const enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
   enriched.sort((a, b) => b.totalViews - a.totalViews);
+
+  // Add oauthToken info
+  const channelTokenMap: Record<number, boolean> = {};
+  for (const ch of channels) {
+    channelTokenMap[ch.id] = !!(ch as any).oauthToken;
+  }
 
   const employees = await prisma.user.findMany({ where: { role: "employee" } });
   const categories = ["JEE", "K12", "UPSC", "NEET"];
 
-  // Get unique months from data
-  const allChannels = await prisma.channel.findMany();
-  const months = [...new Set(allChannels.map(c => {
-    const d = c.addedAt;
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  }))].sort().reverse();
+  // Quick date helpers
+  const today = new Date().toISOString().slice(0, 10);
+  const thisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
+  const lastMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10);
+  const lastMonthEnd = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10);
 
   return (
     <>
@@ -78,12 +78,17 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <option value="all">All Categories</option>
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-          <select name="month" defaultValue={month} className="form-input">
-            <option value="all">All Months</option>
-            {months.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
+          <span className="text-xs text-[var(--muted)] font-semibold">From</span>
+          <input type="date" name="from" defaultValue={dateFrom} className="form-input" />
+          <span className="text-xs text-[var(--muted)] font-semibold">To</span>
+          <input type="date" name="to" defaultValue={dateTo} className="form-input" />
           <button type="submit" className="btn-primary btn-sm">Filter</button>
         </form>
+        <div className="flex gap-2 mt-2">
+          <a href={`?from=${thisMonth}&to=${today}&employee_id=${employeeId}&category=${category}`} className="btn-outline btn-sm">This Month</a>
+          <a href={`?from=${lastMonth}&to=${lastMonthEnd}&employee_id=${employeeId}&category=${category}`} className="btn-outline btn-sm">Last Month</a>
+          <a href={`?employee_id=${employeeId}&category=${category}`} className="btn-outline btn-sm">All Time</a>
+        </div>
       </div>
 
       <div className="card">
@@ -92,7 +97,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <thead>
               <tr>
                 <th>#</th><th>Channel</th><th>Category</th><th>Subscribers</th>
-                <th>Views</th><th>Videos</th><th>Managed By</th><th>Added</th><th>Actions</th>
+                <th>Views</th><th>Videos</th><th>Managed By</th><th>Studio</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -110,8 +115,8 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
                   <td>{ch.subscribers.toLocaleString()}</td>
                   <td className="font-bold text-lg" style={{ color: "var(--red)" }}>{ch.totalViews.toLocaleString()}</td>
                   <td>{ch.videoCount}</td>
-                  <td>{ch.addedBy}</td>
-                  <td className="text-xs text-[var(--muted)]">{new Date(ch.fetchedAt).toLocaleDateString()}</td>
+                  <td className="text-xs">{ch.addedBy}</td>
+                  <td><StudioConnect channelDbId={ch.id} hasToken={channelTokenMap[ch.id] || false} /></td>
                   <td><ChannelActions channelId={ch.id} category={ch.category} /></td>
                 </tr>
               ))}

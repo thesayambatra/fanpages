@@ -16,6 +16,9 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const category = searchParams.category || "all";
   const dateFrom = searchParams.from || "";
   const dateTo = searchParams.to || "";
+  const sortBy = searchParams.sort || "views";
+  const search = searchParams.search || "";
+  const minSubs = searchParams.min_subs || "";
 
   // Build query filter
   const whereFilter: any = {};
@@ -42,7 +45,28 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   });
 
   const enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
-  enriched.sort((a, b) => b.totalViews - a.totalViews);
+
+  // Search filter
+  let filtered = enriched;
+  if (search) {
+    filtered = filtered.filter(c => c.channelName?.toLowerCase().includes(search.toLowerCase()));
+  }
+
+  // Min subscribers filter
+  if (minSubs) {
+    filtered = filtered.filter(c => c.subscribers >= Number(minSubs));
+  }
+
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortBy) {
+      case "subscribers": return b.subscribers - a.subscribers;
+      case "name": return (a.channelName || "").localeCompare(b.channelName || "");
+      case "videos": return b.videoCount - a.videoCount;
+      case "newest": return new Date(b.fetchedAt).getTime() - new Date(a.fetchedAt).getTime();
+      default: return b.totalViews - a.totalViews;
+    }
+  });
 
   // Add oauthToken info
   const channelTokenMap: Record<number, boolean> = {};
@@ -62,7 +86,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   return (
     <>
       <div className="page-header">
-        <h2>All Channels ({enriched.length})</h2>
+        <h2>All Channels ({filtered.length})</h2>
       </div>
 
       <AddChannelForm />
@@ -70,6 +94,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
 
       <div className="card filter-bar">
         <form className="filter-form" method="GET">
+          <input type="text" name="search" defaultValue={search} placeholder="🔍 Search channel..." className="form-input" />
           <select name="employee_id" defaultValue={employeeId} className="form-input">
             <option value="all">All Employees</option>
             {employees.map(e => <option key={e.id} value={e.id}>{e.fullName}</option>)}
@@ -78,16 +103,25 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <option value="all">All Categories</option>
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
+          <select name="sort" defaultValue={sortBy} className="form-input">
+            <option value="views">Sort: Views ↓</option>
+            <option value="subscribers">Sort: Subscribers ↓</option>
+            <option value="videos">Sort: Videos ↓</option>
+            <option value="name">Sort: Name A-Z</option>
+            <option value="newest">Sort: Newest</option>
+          </select>
+          <input type="number" name="min_subs" defaultValue={minSubs} placeholder="Min Subs" className="form-input" style={{ width: "100px" }} />
           <span className="text-xs text-[var(--muted)] font-semibold">From</span>
           <input type="date" name="from" defaultValue={dateFrom} className="form-input" />
           <span className="text-xs text-[var(--muted)] font-semibold">To</span>
           <input type="date" name="to" defaultValue={dateTo} className="form-input" />
           <button type="submit" className="btn-primary btn-sm">Filter</button>
+          <a href="/manager/channels" className="btn-outline btn-sm">Reset</a>
         </form>
         <div className="flex gap-2 mt-2">
-          <a href={`?from=${thisMonth}&to=${today}&employee_id=${employeeId}&category=${category}`} className="btn-outline btn-sm">This Month</a>
-          <a href={`?from=${lastMonth}&to=${lastMonthEnd}&employee_id=${employeeId}&category=${category}`} className="btn-outline btn-sm">Last Month</a>
-          <a href={`?employee_id=${employeeId}&category=${category}`} className="btn-outline btn-sm">All Time</a>
+          <a href={`?from=${thisMonth}&to=${today}&employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">This Month</a>
+          <a href={`?from=${lastMonth}&to=${lastMonthEnd}&employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">Last Month</a>
+          <a href={`?employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">All Time</a>
         </div>
       </div>
 
@@ -101,7 +135,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
               </tr>
             </thead>
             <tbody>
-              {enriched.map((ch, i) => (
+              {filtered.map((ch, i) => (
                 <tr key={ch.id}>
                   <td>{i + 1}</td>
                   <td>

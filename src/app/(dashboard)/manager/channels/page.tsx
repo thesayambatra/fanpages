@@ -8,6 +8,12 @@ import { ChannelActions } from "@/components/ChannelActions";
 import { BulkAddChannels } from "@/components/BulkAddChannels";
 import { StudioConnect } from "@/components/StudioConnect";
 
+function getHealthIndicator(views: number) {
+  if (views > 100000) return { emoji: "🟢", label: "Active" };
+  if (views >= 10000) return { emoji: "🟡", label: "Growing" };
+  return { emoji: "🔴", label: "Needs Attention" };
+}
+
 export default async function ManagerChannels({ searchParams }: { searchParams: { [key: string]: string } }) {
   const session = await requireRole("manager");
   if (!session) redirect("/login");
@@ -32,11 +38,15 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   if (category !== "all") {
     whereFilter.category = category;
   }
-  if (dateFrom) {
-    whereFilter.addedAt = { ...whereFilter.addedAt, gte: new Date(dateFrom) };
-  }
-  if (dateTo) {
-    whereFilter.addedAt = { ...whereFilter.addedAt, lte: new Date(dateTo + "T23:59:59") };
+  // Date range filter using addedAt directly in Prisma where clause
+  if (dateFrom || dateTo) {
+    whereFilter.addedAt = {};
+    if (dateFrom) {
+      whereFilter.addedAt.gte = new Date(dateFrom);
+    }
+    if (dateTo) {
+      whereFilter.addedAt.lte = new Date(dateTo + "T23:59:59");
+    }
   }
 
   const channels = await prisma.channel.findMany({
@@ -83,6 +93,23 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const lastMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10);
   const lastMonthEnd = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10);
 
+  // Summary stats
+  const totalViews = filtered.reduce((sum, c) => sum + c.totalViews, 0);
+  const totalSubscribers = filtered.reduce((sum, c) => sum + c.subscribers, 0);
+  const totalVideos = filtered.reduce((sum, c) => sum + c.videoCount, 0);
+  const avgViewsPerChannel = filtered.length > 0 ? Math.round(totalViews / filtered.length) : 0;
+
+  // Build export URL with current filters
+  const exportParams = new URLSearchParams();
+  if (employeeId !== "all") exportParams.set("employee_id", employeeId);
+  if (category !== "all") exportParams.set("category", category);
+  if (dateFrom) exportParams.set("from", dateFrom);
+  if (dateTo) exportParams.set("to", dateTo);
+  if (sortBy) exportParams.set("sort", sortBy);
+  if (search) exportParams.set("search", search);
+  if (minSubs) exportParams.set("min_subs", minSubs);
+  const exportUrl = `/api/export${exportParams.toString() ? "?" + exportParams.toString() : ""}`;
+
   return (
     <>
       <div className="page-header">
@@ -91,6 +118,26 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
 
       <AddChannelForm />
       <BulkAddChannels />
+
+      {/* Summary Stats Section */}
+      <div className="stat-grid" style={{ marginBottom: "1.5rem" }}>
+        <div className="stat-card">
+          <div className="text-xs text-[var(--muted)]">Total Views</div>
+          <div className="text-2xl font-bold" style={{ color: "var(--red)" }}>{totalViews.toLocaleString()}</div>
+        </div>
+        <div className="stat-card">
+          <div className="text-xs text-[var(--muted)]">Total Subscribers</div>
+          <div className="text-2xl font-bold">{totalSubscribers.toLocaleString()}</div>
+        </div>
+        <div className="stat-card">
+          <div className="text-xs text-[var(--muted)]">Avg Views / Channel</div>
+          <div className="text-2xl font-bold">{avgViewsPerChannel.toLocaleString()}</div>
+        </div>
+        <div className="stat-card">
+          <div className="text-xs text-[var(--muted)]">Total Videos</div>
+          <div className="text-2xl font-bold">{totalVideos.toLocaleString()}</div>
+        </div>
+      </div>
 
       <div className="card filter-bar">
         <form className="filter-form" method="GET">
@@ -122,6 +169,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
           <a href={`?from=${thisMonth}&to=${today}&employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">This Month</a>
           <a href={`?from=${lastMonth}&to=${lastMonthEnd}&employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">Last Month</a>
           <a href={`?employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">All Time</a>
+          <a href={exportUrl} className="btn-primary btn-sm" target="_blank">📥 Export Filtered</a>
         </div>
       </div>
 
@@ -130,31 +178,48 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
           <table className="data-table">
             <thead>
               <tr>
-                <th>#</th><th>Channel</th><th>Category</th><th>Subscribers</th>
-                <th>Views</th><th>Videos</th><th>Managed By</th><th>Studio</th><th>Actions</th>
+                <th>#</th><th>Channel</th><th>Health</th><th>Category</th><th>Subscribers</th>
+                <th>Views</th><th>Videos</th><th>Views/Video</th><th>Managed By</th><th>Studio</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((ch, i) => (
-                <tr key={ch.id}>
-                  <td>{i + 1}</td>
-                  <td>
-                    <div className="ch-cell">
-                      {ch.thumbnail && <img src={ch.thumbnail} className="mini-thumb" alt="" />}
-                      <a href={ch.url} target="_blank" className="hover:text-red-500">{ch.channelName}</a>
-                      <PerformanceBadges subscribers={ch.subscribers} engagementRate={ch.engagementRate} />
-                    </div>
-                  </td>
-                  <td>{ch.category ? <span className="tag">{ch.category}</span> : "—"}</td>
-                  <td>{ch.subscribers.toLocaleString()}</td>
-                  <td className="font-bold text-lg" style={{ color: "var(--red)" }}>{ch.totalViews.toLocaleString()}</td>
-                  <td>{ch.videoCount}</td>
-                  <td className="text-xs">{ch.addedBy}</td>
-                  <td><StudioConnect channelDbId={ch.id} hasToken={channelTokenMap[ch.id] || false} /></td>
-                  <td><ChannelActions channelId={ch.id} category={ch.category} /></td>
-                </tr>
-              ))}
+              {filtered.map((ch, i) => {
+                const health = getHealthIndicator(ch.totalViews);
+                const viewsPerVideo = ch.videoCount > 0 ? Math.round(ch.totalViews / ch.videoCount) : 0;
+                return (
+                  <tr key={ch.id}>
+                    <td>{i + 1}</td>
+                    <td>
+                      <div className="ch-cell">
+                        {ch.thumbnail && <img src={ch.thumbnail} className="mini-thumb" alt="" />}
+                        <a href={ch.url} target="_blank" className="hover:text-red-500">{ch.channelName}</a>
+                        <PerformanceBadges subscribers={ch.subscribers} engagementRate={ch.engagementRate} />
+                      </div>
+                    </td>
+                    <td>
+                      <span title={health.label}>{health.emoji} {health.label}</span>
+                    </td>
+                    <td>{ch.category ? <span className="tag">{ch.category}</span> : "—"}</td>
+                    <td>{ch.subscribers.toLocaleString()}</td>
+                    <td className="font-bold text-lg" style={{ color: "var(--red)" }}>{ch.totalViews.toLocaleString()}</td>
+                    <td>{ch.videoCount}</td>
+                    <td className="text-sm">{viewsPerVideo.toLocaleString()}</td>
+                    <td className="text-xs">{ch.addedBy}</td>
+                    <td><StudioConnect channelDbId={ch.id} hasToken={channelTokenMap[ch.id] || false} /></td>
+                    <td><ChannelActions channelId={ch.id} category={ch.category} /></td>
+                  </tr>
+                );
+              })}
             </tbody>
+            <tfoot>
+              <tr style={{ fontWeight: "bold", borderTop: "2px solid var(--border)" }}>
+                <td colSpan={4}>Totals ({filtered.length} channels)</td>
+                <td>{totalSubscribers.toLocaleString()}</td>
+                <td style={{ color: "var(--red)" }}>{totalViews.toLocaleString()}</td>
+                <td>{totalVideos.toLocaleString()}</td>
+                <td colSpan={4}></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

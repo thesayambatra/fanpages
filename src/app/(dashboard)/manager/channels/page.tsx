@@ -25,6 +25,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const sortBy = searchParams.sort || "views";
   const search = searchParams.search || "";
   const minSubs = searchParams.min_subs || "";
+  const studioFilter = searchParams.studio || "all";
 
   // Build query filter
   const whereFilter: any = {};
@@ -56,6 +57,12 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
 
   const enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
 
+  // Add oauthToken info
+  const channelTokenMap: Record<number, boolean> = {};
+  for (const ch of channels) {
+    channelTokenMap[ch.id] = !!(ch as any).oauthToken;
+  }
+
   // Search filter
   let filtered = enriched;
   if (search) {
@@ -65,6 +72,13 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   // Min subscribers filter
   if (minSubs) {
     filtered = filtered.filter(c => c.subscribers >= Number(minSubs));
+  }
+
+  // Studio connected filter
+  if (studioFilter === "connected") {
+    filtered = filtered.filter(c => channelTokenMap[c.id]);
+  } else if (studioFilter === "not_connected") {
+    filtered = filtered.filter(c => !channelTokenMap[c.id]);
   }
 
   // Sort
@@ -77,12 +91,6 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
       default: return b.totalViews - a.totalViews;
     }
   });
-
-  // Add oauthToken info
-  const channelTokenMap: Record<number, boolean> = {};
-  for (const ch of channels) {
-    channelTokenMap[ch.id] = !!(ch as any).oauthToken;
-  }
 
   const employees = await prisma.user.findMany({ where: { role: "employee" } });
   const categories = ["JEE", "K12", "UPSC", "NEET"];
@@ -158,6 +166,11 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <option value="newest">Sort: Newest</option>
           </select>
           <input type="number" name="min_subs" defaultValue={minSubs} placeholder="Min Subs" className="form-input" style={{ width: "100px" }} />
+          <select name="studio" defaultValue={studioFilter} className="form-input">
+            <option value="all">All Channels</option>
+            <option value="connected">Studio Connected ✅</option>
+            <option value="not_connected">Not Connected ❌</option>
+          </select>
           <span className="text-xs text-[var(--muted)] font-semibold">From</span>
           <input type="date" name="from" defaultValue={dateFrom} className="form-input" />
           <span className="text-xs text-[var(--muted)] font-semibold">To</span>

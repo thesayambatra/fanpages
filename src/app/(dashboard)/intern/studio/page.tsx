@@ -13,17 +13,13 @@ export default async function StudioPage({ searchParams }: { searchParams: { cha
   const ch = await prisma.channel.findUnique({ where: { id: channelDbId }, include: { oauthToken: true } });
   if (!ch) redirect("/");
 
-  // Access check: owner, their manager-employee, or manager
+  // Access check: employees, manager, cbo can see all; interns only their own
   const user = session.user as any;
   const userId = Number(user.id);
-  const isOwner = ch.userId === userId;
-  const isManager = user.role === "manager";
-  let isEmployeeOfOwner = false;
-  if (user.role === "employee") {
-    const owner = await prisma.user.findUnique({ where: { id: ch.userId } });
-    isEmployeeOfOwner = owner?.createdById === userId;
+  const allowedRoles = ["manager", "employee", "cbo"];
+  if (!allowedRoles.includes(user.role) && ch.userId !== userId) {
+    redirect("/");
   }
-  if (!isOwner && !isManager && !isEmployeeOfOwner) redirect("/");
 
   if (!ch.oauthToken) {
     return (

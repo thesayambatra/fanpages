@@ -52,7 +52,7 @@ export async function enrichChannel(ch: any) {
     id: ch.id,
     channelId: ch.channelId,
     channelName: ch.channelName,
-    url: ch.channelUrl,
+    url: ch.channelUrl.startsWith("http") ? ch.channelUrl : `https://www.youtube.com/channel/${ch.channelUrl || ch.channelId}`,
     country: ch.country,
     category: ch.category,
     notes: ch.notes,

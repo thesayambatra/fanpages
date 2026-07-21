@@ -48,32 +48,45 @@ export async function fetchStudioAnalytics(
     // List all channels accessible to this token
     const yt = google.youtube({ version: "v3", auth: client });
     
-    // Try to list channels this account manages (including Brand Accounts)
-    let channelListRes;
+    // Get all channels this account has access to
+    let allAccessibleChannelIds: string[] = [];
     try {
-      channelListRes = await yt.channels.list({ 
-        part: ["id", "snippet"], 
-        managedByMe: true, 
-        maxResults: 50 
-      });
-    } catch {
-      channelListRes = await yt.channels.list({ part: ["id", "snippet"], mine: true, maxResults: 50 });
-    }
-    const accessibleChannels = (channelListRes.data.items || []).map(item => ({
-      id: item.id!, name: item.snippet?.title || ""
-    }));
+      // Try mine first
+      const mineRes = await yt.channels.list({ part: ["id", "snippet"], mine: true, maxResults: 50 });
+      allAccessibleChannelIds = (mineRes.data.items || []).map(item => item.id!);
+    } catch {}
 
-    // For Brand Accounts, we need onBehalfOfContentOwner or direct channel query
-    // Try specific channel first, then mine
-    let channelParam = `channel==${channelId}`;
-    let queryWorked = false;
+    // Also try to list channels by the specific ID to see if we have access
     try {
-      const testRes = await svc.reports.query({ ids: channelParam, startDate, endDate, metrics: "views" });
-      if (testRes.data.rows && testRes.data.rows.length > 0) queryWorked = true;
-      else queryWorked = true; // no rows but no error = access granted
+      const specificRes = await yt.channels.list({ part: ["id", "snippet"], id: [channelId] });
+      if (specificRes.data.items?.length) {
+        allAccessibleChannelIds.push(channelId);
+      }
+    } catch {}
+
+    const accessibleChannels = allAccessibleChannelIds.map(id => ({ id, name: "" }));
+
+    // Strategy: Try querying with the specific channel ID first
+    // If that fails, check if this channel is in our accessible list
+    // If still fails, use channel==mine as last resort
+    let channelParam = `channel==${channelId}`;
+    let usedFallback = false;
+    
+    try {
+      await svc.reports.query({ ids: channelParam, startDate, endDate, metrics: "views" });
     } catch (e: any) {
-      // If forbidden, try channel==mine  
-      channelParam = "channel==mine";
+      // Try with contentOwner if available
+      try {
+        // Some accounts need this format
+        const testRes = await svc.reports.query({ 
+          ids: `channel==${channelId}`,
+          startDate, endDate, metrics: "views,estimatedMinutesWatched"
+        });
+      } catch {
+        // Final fallback to channel==mine
+        channelParam = "channel==mine";
+        usedFallback = true;
+      }
     }
 
     const q = (metrics: string, dims?: string, filters?: string, sort?: string, maxResults?: number) =>
@@ -98,13 +111,22 @@ export async function fetchStudioAnalytics(
       q("views,estimatedMinutesWatched", "deviceType", undefined, "-views"),
     ]);
 
-    // Impressions are queried separately (not all channels have access)
+    // Impressions are queried separately — try specific channel ID even if main query uses mine
     let impressionsData: any = {};
     try {
-      const impRes = await q("impressions,impressionClickThroughRate");
+      const impRes = await svc.reports.query({
+        ids: `channel==${channelId}`,
+        startDate, endDate,
+        metrics: "impressions,impressionClickThroughRate"
+      });
       impressionsData = parseOverview(impRes.data);
-    } catch (e: any) {
-      console.log("Impressions not available for this channel:", e.message?.slice(0, 100));
+    } catch {
+      try {
+        const impRes = await q("impressions,impressionClickThroughRate");
+        impressionsData = parseOverview(impRes.data);
+      } catch (e: any) {
+        console.log("Impressions not available:", e.message?.slice(0, 100));
+      }
     }
 
     let shortsOverview = null, shortsDaily = null;
@@ -127,6 +149,7 @@ export async function fetchStudioAnalytics(
       shortsDaily: shortsDaily ? parseRows(shortsDaily.data) : [],
       accessibleChannels,
       queriedAs: channelParam,
+      usedFallback,
     };
   } catch (e: any) {
     const errMsg = e.response?.data?.error?.message || e.message || "Unknown error";

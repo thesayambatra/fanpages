@@ -16,6 +16,7 @@ export function Navbar() {
       ? [
           { href: "/manager", label: "Dashboard" },
           { href: "/manager/channels", label: "Channels" },
+          { href: "/shorts", label: "Shorts" },
           { href: "/manager/analytics", label: "Analytics" },
           { href: "/team", label: "Team" },
           { href: "/kt", label: "KT Doc" },
@@ -24,6 +25,7 @@ export function Navbar() {
         ? [
             { href: "/employee", label: "Dashboard" },
             { href: "/employee/channels", label: "Channels" },
+            { href: "/shorts", label: "Shorts" },
             { href: "/employee/interns", label: "Interns" },
             { href: "/team", label: "Team" },
             { href: "/kt", label: "KT Doc" },

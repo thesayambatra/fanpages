@@ -107,10 +107,31 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const totalVideos = filtered.reduce((sum, c) => sum + c.videoCount, 0);
   const avgViewsPerChannel = filtered.length > 0 ? Math.round(totalViews / filtered.length) : 0;
 
-  // Calculate views growth this month (compare latest snapshot vs earliest snapshot this month)
+  // Calculate views this month from Studio API (connected channels) + snapshot fallback
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const monthStartStr = monthStart.toISOString().slice(0, 10);
+  const todayStr = new Date().toISOString().slice(0, 10);
   let viewsThisMonth = 0;
+  let studioChannelCount = 0;
+
+  // Get all channels with OAuth tokens for Studio data
+  const tokensForChannels = await prisma.oAuthToken.findMany({ include: { channel: true } });
+  
+  for (const tokenEntry of tokensForChannels) {
+    try {
+      const { fetchStudioAnalytics } = await import("@/lib/analytics");
+      const data = await fetchStudioAnalytics(tokenEntry.tokenJson, tokenEntry.channel.channelId, monthStartStr, todayStr);
+      if (data && !data.error && data.overview?.views) {
+        viewsThisMonth += data.overview.views;
+        studioChannelCount++;
+      }
+    } catch { /* skip failed channels */ }
+  }
+
+  // For channels without Studio, use snapshot comparison as fallback
   for (const ch of channels) {
+    const hasToken = channelTokenMap[ch.id];
+    if (hasToken) continue; // already counted from Studio
     const earliestThisMonth = await prisma.snapshot.findFirst({
       where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
       orderBy: { fetchedAt: "asc" },
@@ -152,7 +173,8 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         </div>
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Views This Month</div>
-          <div className="text-2xl font-bold" style={{ color: "#4caf50" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
+          <div className="text-2xl font-bold" style={{ color: "#10b981" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
+          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount} from Studio · rest from snapshots</div>
         </div>
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Subscribers</div>

@@ -107,6 +107,23 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const totalVideos = filtered.reduce((sum, c) => sum + c.videoCount, 0);
   const avgViewsPerChannel = filtered.length > 0 ? Math.round(totalViews / filtered.length) : 0;
 
+  // Calculate views growth this month (compare latest snapshot vs earliest snapshot this month)
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  let viewsThisMonth = 0;
+  for (const ch of channels) {
+    const earliestThisMonth = await prisma.snapshot.findFirst({
+      where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
+      orderBy: { fetchedAt: "asc" },
+    });
+    const latest = await prisma.snapshot.findFirst({
+      where: { channelId: ch.id },
+      orderBy: { fetchedAt: "desc" },
+    });
+    if (earliestThisMonth && latest && latest.id !== earliestThisMonth.id) {
+      viewsThisMonth += (latest.totalViews - earliestThisMonth.totalViews);
+    }
+  }
+
   // Build export URL with current filters
   const exportParams = new URLSearchParams();
   if (employeeId !== "all") exportParams.set("employee_id", employeeId);
@@ -132,6 +149,10 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Views</div>
           <div className="text-2xl font-bold" style={{ color: "var(--red)" }}>{totalViews.toLocaleString()}</div>
+        </div>
+        <div className="stat-card">
+          <div className="text-xs text-[var(--muted)]">Views This Month</div>
+          <div className="text-2xl font-bold" style={{ color: "#4caf50" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
         </div>
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Subscribers</div>

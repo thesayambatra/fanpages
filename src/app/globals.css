@@ -454,3 +454,17 @@ a:hover { text-shadow:0 0 8px rgba(255,45,85,0.3); }
 [data-theme="light"] body::after { opacity:0.3; }
 
 .badge.cbo { background:rgba(255,149,0,0.15); color:#ff9500; border:1px solid rgba(255,149,0,0.2); }
+
+/* ── Filter bar fixes ── */
+.filter-bar { padding: 1rem 1.25rem !important; }
+.filter-bar .filter-form { gap: 0.5rem; }
+.filter-bar .filter-form .form-input { min-width: 0; font-size: 12px; padding: 6px 10px; }
+.filter-bar .filter-form input[type="date"] { width: 130px; }
+.filter-bar .filter-form input[type="number"] { width: 80px; }
+.filter-bar .filter-form input[type="text"] { min-width: 140px; }
+.filter-bar .filter-form select { max-width: 150px; }
+
+/* ── Table compact ── */
+.data-table th, .data-table td { padding: 0.5rem 0.6rem; font-size: 12px; }
+.data-table .ch-cell { gap: 0.4rem; }
+.data-table .mini-thumb { width: 28px; height: 28px; }

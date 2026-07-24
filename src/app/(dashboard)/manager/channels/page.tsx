@@ -107,7 +107,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const totalVideos = filtered.reduce((sum, c) => sum + c.videoCount, 0);
   const avgViewsPerChannel = filtered.length > 0 ? Math.round(totalViews / filtered.length) : 0;
 
-  // Calculate views this month from Studio API (connected channels) + snapshot fallback
+  // Calculate views this month ONLY from Studio connected channels
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const monthStartStr = monthStart.toISOString().slice(0, 10);
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -126,23 +126,6 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         studioChannelCount++;
       }
     } catch { /* skip failed channels */ }
-  }
-
-  // For channels without Studio, use snapshot comparison as fallback
-  for (const ch of channels) {
-    const hasToken = channelTokenMap[ch.id];
-    if (hasToken) continue; // already counted from Studio
-    const earliestThisMonth = await prisma.snapshot.findFirst({
-      where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
-      orderBy: { fetchedAt: "asc" },
-    });
-    const latest = await prisma.snapshot.findFirst({
-      where: { channelId: ch.id },
-      orderBy: { fetchedAt: "desc" },
-    });
-    if (earliestThisMonth && latest && latest.id !== earliestThisMonth.id) {
-      viewsThisMonth += (latest.totalViews - earliestThisMonth.totalViews);
-    }
   }
 
   // Build export URL with current filters
@@ -174,7 +157,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Views This Month</div>
           <div className="text-2xl font-bold" style={{ color: "#10b981" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
-          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount} from Studio · rest from snapshots</div>
+          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount} Studio channels</div>
         </div>
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Subscribers</div>

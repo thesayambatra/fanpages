@@ -113,6 +113,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const todayStr = new Date().toISOString().slice(0, 10);
   let viewsThisMonth = 0;
   let studioChannelCount = 0;
+  let studioFailed = 0;
 
   // Get all channels with OAuth tokens for Studio data
   const tokensForChannels = await prisma.oAuthToken.findMany({ include: { channel: true } });
@@ -124,8 +125,12 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
       if (data && !data.error && data.overview?.views) {
         viewsThisMonth += data.overview.views;
         studioChannelCount++;
+      } else {
+        studioFailed++;
       }
-    } catch { /* skip failed channels */ }
+    } catch {
+      studioFailed++;
+    }
   }
 
   // Build export URL with current filters
@@ -157,7 +162,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Views This Month</div>
           <div className="text-2xl font-bold" style={{ color: "#10b981" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
-          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount} Studio channels</div>
+          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount}/{tokensForChannels.length} channels{studioFailed > 0 ? ` · ${studioFailed} failed` : ""}</div>
         </div>
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Subscribers</div>

@@ -63,19 +63,24 @@ export default async function EmployeeChannels() {
         )}
       </div>
 
-      {/* Intern channels */}
-      {myInterns.length > 0 && (
-        <div className="card">
-          <div className="card-header">
-            <h3>🎓 Intern Channels ({enrichInternChannels.length})</h3>
+      {/* Intern channels - grouped per intern */}
+      {myInterns.length > 0 && myInterns.map((intern) => {
+        const internChs = enrichInternChannels.filter(ch => ch.userId === intern.id);
+        if (internChs.length === 0) return null;
+        return (
+          <div key={intern.id} className="card">
+            <div className="card-header">
+              <h3 className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white font-bold" style={{ background: intern.avatarColor }}>
+                  {intern.fullName[0]}
+                </div>
+                🎓 {intern.fullName}&apos;s Channels ({internChs.length})
+              </h3>
+            </div>
+            <ChannelTable channels={internChs} />
           </div>
-          {enrichInternChannels.length > 0 ? (
-            <ChannelTable channels={enrichInternChannels} showManager />
-          ) : (
-            <div className="text-center py-6 text-[var(--muted)]">No channels assigned to interns yet.</div>
-          )}
-        </div>
-      )}
+        );
+      })}
     </>
   );
 }

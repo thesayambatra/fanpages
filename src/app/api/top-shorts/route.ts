@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   // Get channels filtered by category
   const where: any = {};
   if (category !== "all") where.category = category;
-  const channels = await prisma.channel.findMany({ where, include: { user: true }, take: 20 });
+  const channels = await prisma.channel.findMany({ where, include: { user: true }, take: 8 });
 
   const yt = google.youtube({ version: "v3", auth: API_KEY });
   const allShorts: any[] = [];
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         channelId: ch.channelId,
         order: "viewCount",
         type: ["video"],
-        maxResults: 5,
+        maxResults: 3,
         ...(period !== "overall" && { publishedAfter: since }),
       });
 

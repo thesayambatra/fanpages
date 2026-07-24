@@ -138,11 +138,6 @@ export function StudioDashboard({ channelDbId, channelName }: { channelDbId: num
               <div className="smc-val">{fmt(ov.views)}</div>
               <div className="smc-sub">{from} – {to}</div>
             </div>
-            <div className="studio-metric-card ctr">
-              <div className="smc-label">CTR</div>
-              <div className="smc-val">{pct(ov.impressionClickThroughRate)}%</div>
-              <div className="smc-sub">{fmt(ov.impressions)} impressions</div>
-            </div>
             <div className="studio-metric-card stayed">
               <div className="smc-label">Stayed to Watch</div>
               <div className="smc-val">{pct(ov.averageViewPercentage)}%</div>
@@ -167,7 +162,6 @@ export function StudioDashboard({ channelDbId, channelName }: { channelDbId: num
             <div className="stat-card"><div className="stat-icon">↗</div><div className="stat-val">{fmt(ov.shares)}</div><div className="stat-label">Shares</div></div>
             <div className="stat-card"><div className="stat-icon">➕</div><div className="stat-val">+{fmt(ov.subscribersGained)}</div><div className="stat-label">Subs Gained</div></div>
             <div className="stat-card"><div className="stat-icon">➖</div><div className="stat-val">-{fmt(ov.subscribersLost)}</div><div className="stat-label">Subs Lost</div></div>
-            <div className="stat-card"><div className="stat-icon">📡</div><div className="stat-val">{fmt(ov.impressions)}</div><div className="stat-label">Impressions</div></div>
           </div>
 
           {/* Daily chart */}
@@ -228,7 +222,7 @@ export function StudioDashboard({ channelDbId, channelName }: { channelDbId: num
               <div className="table-wrap">
                 <table className="data-table">
                   <thead>
-                    <tr><th>#</th><th>Video</th><th>Views</th><th>Watch Mins</th><th>Avg Duration</th><th>Stayed %</th><th>CTR</th><th>Likes</th><th>Comments</th><th>Shares</th></tr>
+                    <tr><th>#</th><th>Video</th><th>Views</th><th>Watch Mins</th><th>Avg Duration</th><th>Stayed %</th><th>Likes</th><th>Comments</th><th>Shares</th></tr>
                   </thead>
                   <tbody>
                     {data.topVideos.map((r: any, i: number) => (
@@ -239,7 +233,6 @@ export function StudioDashboard({ channelDbId, channelName }: { channelDbId: num
                         <td>{fmt(r.estimatedMinutesWatched)}</td>
                         <td>{mmss(Math.round(r.averageViewDuration || 0))}</td>
                         <td><span className={`eng-badge ${(r.averageViewPercentage || 0) >= 50 ? "green" : (r.averageViewPercentage || 0) >= 30 ? "orange" : "red"}`}>{pct(r.averageViewPercentage)}%</span></td>
-                        <td>{pct(r.impressionClickThroughRate)}%</td>
                         <td>{fmt(r.likes)}</td>
                         <td>{fmt(r.comments)}</td>
                         <td>{fmt(r.shares)}</td>

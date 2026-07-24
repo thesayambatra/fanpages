@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const days = Number(searchParams.get("days") || "1");
 
-  const channels = await prisma.channel.findMany({ include: { user: true } });
+  const channels = await prisma.channel.findMany({ include: { user: true }, take: 15 });
   const yt = google.youtube({ version: "v3", auth: API_KEY });
 
   const since = new Date(Date.now() - days * 86400000).toISOString();

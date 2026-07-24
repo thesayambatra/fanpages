@@ -104,7 +104,7 @@ function ChannelTable({ channels, showManager }: { channels: any[]; showManager?
               <td>
                 <div className="ch-cell">
                   {ch.snap?.thumbnail && <img src={ch.snap.thumbnail} className="mini-thumb" alt="" />}
-                  <a href={ch.channelUrl} target="_blank" className="hover:text-red-500">
+                  <a href={ch.channelUrl?.startsWith("http") ? ch.channelUrl : `https://www.youtube.com/channel/${ch.channelUrl || ch.channelId}`} target="_blank" className="hover:text-red-500">
                     {ch.channelName || ch.channelId}
                   </a>
                 </div>

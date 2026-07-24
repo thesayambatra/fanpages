@@ -107,29 +107,25 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const totalVideos = filtered.reduce((sum, c) => sum + c.videoCount, 0);
   const avgViewsPerChannel = filtered.length > 0 ? Math.round(totalViews / filtered.length) : 0;
 
-  // Calculate views this month ONLY from Studio connected channels
+  // Calculate views this month from snapshots (fast, no API calls)
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  const monthStartStr = monthStart.toISOString().slice(0, 10);
-  const todayStr = new Date().toISOString().slice(0, 10);
   let viewsThisMonth = 0;
   let studioChannelCount = 0;
   let studioFailed = 0;
+  const tokensForChannels = await prisma.oAuthToken.findMany();
 
-  // Get all channels with OAuth tokens for Studio data
-  const tokensForChannels = await prisma.oAuthToken.findMany({ include: { channel: true } });
-  
-  for (const tokenEntry of tokensForChannels) {
-    try {
-      const { fetchStudioAnalytics } = await import("@/lib/analytics");
-      const data = await fetchStudioAnalytics(tokenEntry.tokenJson, tokenEntry.channel.channelId, monthStartStr, todayStr);
-      if (data && !data.error && data.overview?.views) {
-        viewsThisMonth += data.overview.views;
-        studioChannelCount++;
-      } else {
-        studioFailed++;
-      }
-    } catch {
-      studioFailed++;
+  for (const ch of channels) {
+    const earliestThisMonth = await prisma.snapshot.findFirst({
+      where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
+      orderBy: { fetchedAt: "asc" },
+    });
+    const latest = await prisma.snapshot.findFirst({
+      where: { channelId: ch.id },
+      orderBy: { fetchedAt: "desc" },
+    });
+    if (earliestThisMonth && latest && latest.id !== earliestThisMonth.id) {
+      viewsThisMonth += (latest.totalViews - earliestThisMonth.totalViews);
+      studioChannelCount++;
     }
   }
 
@@ -162,7 +158,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Views This Month</div>
           <div className="text-2xl font-bold" style={{ color: "#10b981" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
-          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount}/{tokensForChannels.length} channels{studioFailed > 0 ? ` · ${studioFailed} failed` : ""}</div>
+          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount} channels with data</div>
         </div>
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Subscribers</div>

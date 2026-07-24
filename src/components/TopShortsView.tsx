@@ -7,28 +7,47 @@ export function TopShortsView() {
   const [shorts, setShorts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
+  const [period, setPeriod] = useState("all");
 
   useEffect(() => { fetchData(); }, []);
 
-  const fetchData = async (cat?: string) => {
+  const fetchData = async (cat?: string, per?: string) => {
     setLoading(true);
     const c = cat || category;
-    const res = await fetch(`/api/top-shorts?category=${c}`);
+    const p = per || period;
+    const res = await fetch(`/api/top-shorts?category=${c}&period=${p}`);
     const data = await res.json();
     setShorts(data.shorts || []);
     setLoading(false);
   };
 
-  const changeCategory = (c: string) => { setCategory(c); fetchData(c); };
+  const changeCategory = (c: string) => { setCategory(c); fetchData(c, period); };
+  const changePeriod = (p: string) => { setPeriod(p); fetchData(category, p); };
 
   return (
     <>
       <div className="page-header"><h2>🩳 Top 5 Videos</h2></div>
 
-      {/* Category filter */}
+      {/* Filters */}
       <div className="card" style={{ padding: "0.75rem 1rem", marginBottom: "1rem" }}>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[var(--muted)] uppercase">Category:</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-bold text-[var(--muted)] uppercase">Period:</span>
+          {[
+            { id: "day", label: "Today" },
+            { id: "week", label: "This Week" },
+            { id: "month", label: "This Month" },
+            { id: "all", label: "All Time" },
+          ].map(p => (
+            <button
+              key={p.id}
+              onClick={() => changePeriod(p.id)}
+              className={`btn-sm rounded-full font-semibold ${period === p.id ? "btn-primary" : "btn-outline"}`}
+            >
+              {p.label}
+            </button>
+          ))}
+
+          <span className="text-xs font-bold text-[var(--muted)] uppercase ml-4">Category:</span>
           {["all", "JEE", "NEET", "UPSC", "K12"].map(c => (
             <button
               key={c}

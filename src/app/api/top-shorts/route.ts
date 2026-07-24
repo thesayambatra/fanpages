@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category") || "all";
+  const period = searchParams.get("period") || "all";
 
   // Get channels filtered by category
   const where: any = {};
@@ -39,11 +40,26 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Filter by published date if period specified
+  let filtered = allVideos;
+  if (period !== "all") {
+    const now = Date.now();
+    let since = 0;
+    if (period === "day") since = now - 1 * 86400000;
+    else if (period === "week") since = now - 7 * 86400000;
+    else if (period === "month") since = now - 30 * 86400000;
+
+    filtered = allVideos.filter(v => {
+      if (!v.published) return false;
+      return new Date(v.published).getTime() >= since;
+    });
+  }
+
   // Sort by views and take top 5
-  allVideos.sort((a, b) => (b.views || 0) - (a.views || 0));
+  filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
 
   return NextResponse.json({
-    shorts: allVideos.slice(0, 5),
-    total: allVideos.length,
+    shorts: filtered.slice(0, 5),
+    total: filtered.length,
   });
 }

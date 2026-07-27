@@ -32,6 +32,11 @@ export async function GET(req: NextRequest) {
       ? Math.max(0, snap.totalViews - earliest.totalViews)
       : 0;
 
+    // Shorts/videos posted this month (video count growth)
+    const shortsPosted = earliest && snap.id !== earliest.id
+      ? Math.max(0, snap.videoCount - earliest.videoCount)
+      : 0;
+
     // Top video from stored data
     let topVideoViews = 0;
     let topVideoLink = "";
@@ -49,6 +54,7 @@ export async function GET(req: NextRequest) {
       channelLink: ch.channelUrl?.startsWith("http") ? ch.channelUrl : `https://www.youtube.com/channel/${ch.channelUrl || ch.channelId}`,
       totalViews: snap.totalViews,
       monthlyViews,
+      shortsPosted,
       subscribers: snap.subscribers,
       videoCount: snap.videoCount,
       topVideoViews,
@@ -74,20 +80,21 @@ export async function GET(req: NextRequest) {
     // Category header
     csv += `\n${cat}\n`;
     csv += `${monthName} Report\n`;
-    csv += `Channel Name,Channel Link,Total Views (YTD),Views This Month,Subscribers,Videos,Most Viewed Video Views,Most Viewed Video Link,Managed By\n`;
+    csv += `Channel Name,Channel Link,Total Views (YTD),Views This Month,Shorts Posted This Month,Subscribers,Videos,Most Viewed Video Views,Most Viewed Video Link,Managed By\n`;
 
     // Sort by total views desc
     rows.sort((a, b) => b.totalViews - a.totalViews);
 
     for (const row of rows) {
-      csv += `"${row.channelName}","${row.channelLink}",${row.totalViews},${row.monthlyViews},${row.subscribers},${row.videoCount},${row.topVideoViews},"${row.topVideoLink}","${row.managedBy}"\n`;
+      csv += `"${row.channelName}","${row.channelLink}",${row.totalViews},${row.monthlyViews},${row.shortsPosted},${row.subscribers},${row.videoCount},${row.topVideoViews},"${row.topVideoLink}","${row.managedBy}"\n`;
     }
 
     // Category totals
     const totalViews = rows.reduce((s, r) => s + r.totalViews, 0);
     const totalMonthly = rows.reduce((s, r) => s + r.monthlyViews, 0);
+    const totalShorts = rows.reduce((s, r) => s + r.shortsPosted, 0);
     const totalSubs = rows.reduce((s, r) => s + r.subscribers, 0);
-    csv += `"TOTAL (${cat})",,${totalViews},${totalMonthly},${totalSubs},,,\n`;
+    csv += `"TOTAL (${cat})",,${totalViews},${totalMonthly},${totalShorts},${totalSubs},,,,\n`;
   }
 
   return new NextResponse(csv, {

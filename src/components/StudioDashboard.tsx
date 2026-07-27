@@ -228,7 +228,7 @@ export function StudioDashboard({ channelDbId, channelName }: { channelDbId: num
                     {data.topVideos.map((r: any, i: number) => (
                       <tr key={r.video}>
                         <td>{i + 1}</td>
-                        <td><a href={`https://youtube.com/watch?v=${r.video}`} target="_blank" className="hover:text-red-500 text-xs">{r.video}</a></td>
+                        <td><a href={`https://youtube.com/watch?v=${r.video}`} target="_blank" className="hover:text-[var(--red)] text-xs font-medium">{r.title || r.video}</a></td>
                         <td>{fmt(r.views)}</td>
                         <td>{fmt(r.estimatedMinutesWatched)}</td>
                         <td>{mmss(Math.round(r.averageViewDuration || 0))}</td>

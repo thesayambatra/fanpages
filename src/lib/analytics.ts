@@ -137,11 +137,28 @@ export async function fetchStudioAnalytics(
       ]);
     } catch { /* shorts may not be available */ }
 
+    // Resolve video IDs to titles
+    const topVideosRaw = parseRows(topVids.data);
+    let topVideosWithTitles = topVideosRaw;
+    try {
+      const videoIds = topVideosRaw.map((v: any) => v.video).filter(Boolean).slice(0, 15);
+      if (videoIds.length > 0) {
+        const API_KEY = process.env.YOUTUBE_API_KEY;
+        const ytPublic = google.youtube({ version: "v3", auth: API_KEY });
+        const vidRes = await ytPublic.videos.list({ part: ["snippet"], id: videoIds });
+        const titleMap: Record<string, string> = {};
+        for (const item of vidRes.data.items || []) {
+          if (item.id && item.snippet?.title) titleMap[item.id] = item.snippet.title;
+        }
+        topVideosWithTitles = topVideosRaw.map((v: any) => ({ ...v, title: titleMap[v.video] || v.video }));
+      }
+    } catch { /* keep video IDs if title lookup fails */ }
+
     return {
       overview: { ...parseOverview(overview.data), ...impressionsData },
       daily: parseRows(daily.data),
       traffic: parseRows(traffic.data),
-      topVideos: parseRows(topVids.data),
+      topVideos: topVideosWithTitles,
       geo: parseRows(geo.data),
       ageGender: parseRows(ageGender.data),
       device: parseRows(device.data),

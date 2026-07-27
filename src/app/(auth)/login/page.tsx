@@ -37,7 +37,7 @@ export default function LoginPage() {
       </div>
       <div className="login-wrap text-center">
         <div className="mb-4">
-          <img src="/logo.webp" alt="Unacademy" style={{ height: 50, width: "auto" }} className="mx-auto" />
+          <img src="/logo.webp" alt="Unacademy" style={{ height: 36, width: "auto" }} className="mx-auto" />
         </div>
         <h1 className="text-xl font-black mb-6">FanPages Report</h1>
         {error && (

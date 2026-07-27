@@ -18,17 +18,20 @@ export async function GET() {
   let success = 0;
   let failed = 0;
 
-  for (const t of tokens) {
-    try {
-      const data = await fetchStudioAnalytics(t.tokenJson, t.channel.channelId, monthStart, today);
-      if (data && !data.error && data.overview?.views) {
-        totalViews += data.overview.views;
-        success++;
-      } else {
-        failed++;
-      }
-    } catch {
-      failed++;
+  // Fetch in parallel batches of 5 to stay within timeout
+  const batchSize = 5;
+  for (let i = 0; i < tokens.length; i += batchSize) {
+    const batch = tokens.slice(i, i + batchSize);
+    const results = await Promise.allSettled(
+      batch.map(async (t) => {
+        const data = await fetchStudioAnalytics(t.tokenJson, t.channel.channelId, monthStart, today);
+        if (data && !data.error && data.overview?.views) return data.overview.views;
+        return 0;
+      })
+    );
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value > 0) { totalViews += r.value; success++; }
+      else { failed++; }
     }
   }
 

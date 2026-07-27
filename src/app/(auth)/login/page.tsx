@@ -32,25 +32,14 @@ export default function LoginPage() {
   return (
     <div className="login-body">
       <div className="fixed top-4 right-4 flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-            <path d="M8 8C8 8 8 20 20 20C32 20 32 8 32 8" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round" fill="none"/>
-            <path d="M8 8L32 8" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round"/>
-            <ellipse cx="20" cy="32" rx="6" ry="4" fill="#08bd80"/>
-          </svg>
-          <span className="text-sm font-bold"><span style={{ color: "#3b82f6" }}>un</span><span style={{ color: "#08bd80" }}>academy</span></span>
-        </div>
+        <img src="/logo.png" alt="Unacademy" style={{ height: 24 }} />
         <ThemeToggle />
       </div>
       <div className="login-wrap text-center">
         <div className="mb-6">
-          <svg width="48" height="48" viewBox="0 0 40 40" fill="none" className="mx-auto">
-            <path d="M8 8C8 8 8 20 20 20C32 20 32 8 32 8" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round" fill="none"/>
-            <path d="M8 8L32 8" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round"/>
-            <ellipse cx="20" cy="32" rx="6" ry="4" fill="#08bd80"/>
-          </svg>
+          <img src="/logo.png" alt="Unacademy" style={{ height: 40 }} className="mx-auto" />
         </div>
-        <h1 className="text-xl font-black mb-1"><span style={{ color: "#3b82f6" }}>un</span><span style={{ color: "#08bd80" }}>academy</span> FanPages</h1>
+        <h1 className="text-xl font-black mb-1">FanPages Report</h1>
         <p className="text-xs text-[var(--muted)] mb-6">YouTube Shorts Analytics Platform</p>
         {error && (
           <div className="mb-4 px-3 py-2 rounded-lg bg-red-900/30 border border-red-700/40 text-red-400 text-sm">

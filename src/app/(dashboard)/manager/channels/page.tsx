@@ -7,6 +7,7 @@ import { AddChannelForm } from "@/components/AddChannelForm";
 import { ChannelActions } from "@/components/ChannelActions";
 import { BulkAddChannels } from "@/components/BulkAddChannels";
 import { StudioConnect } from "@/components/StudioConnect";
+import { RefreshAllButton } from "@/components/RefreshAllButton";
 
 function getHealthIndicator(views: number) {
   if (views > 100000) return { emoji: "🟢", label: "Active" };
@@ -144,6 +145,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
     <>
       <div className="page-header">
         <h2>All Channels ({filtered.length})</h2>
+        <RefreshAllButton />
       </div>
 
       <AddChannelForm />

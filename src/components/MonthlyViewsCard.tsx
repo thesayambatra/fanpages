@@ -16,13 +16,12 @@ export function MonthlyViewsCard() {
 
   return (
     <div className="stat-card">
-      <div className="stat-icon">📅</div>
       <div className="stat-val" style={{ color: "#08bd80" }}>
         {loading ? "..." : data?.totalViews ? `+${data.totalViews.toLocaleString()}` : "+0"}
       </div>
       <div className="stat-label">Views This Month</div>
       {!loading && data && (
-        <div className="text-[9px] text-[var(--muted)] mt-1">{data.success}/{data.total} studio channels</div>
+        <div className="text-[8px] text-[var(--muted)]">{data.success}/{data.total} ch</div>
       )}
     </div>
   );

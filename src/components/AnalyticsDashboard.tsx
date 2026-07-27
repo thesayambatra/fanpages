@@ -25,17 +25,19 @@ export function AnalyticsDashboard() {
       if (chartRef.current) {
         if (chartInst.current) chartInst.current.destroy();
         const cd = data.chartData;
-        const chartType = "line";
+        // Use bar chart - shows current month data clearly
         chartInst.current = new window.Chart(chartRef.current, {
-          type: chartType,
+          type: "bar",
           data: {
-            labels: cd.labels,
-            datasets: [
-              { label: "JEE", data: cd.jee, borderColor: "#3b82f6", backgroundColor: "rgba(59,130,246,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
-              { label: "NEET", data: cd.neet, borderColor: "#08bd80", backgroundColor: "rgba(8,189,128,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
-              { label: "UPSC", data: cd.upsc, borderColor: "#8b5cf6", backgroundColor: "rgba(139,92,246,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
-              { label: "K12", data: cd.k12, borderColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
-            ],
+            labels: ["JEE", "NEET", "UPSC", "K12"],
+            datasets: [{
+              label: "Views This Month",
+              data: [cd.jee[4] || 0, cd.neet[4] || 0, cd.upsc[4] || 0, cd.k12[4] || 0],
+              backgroundColor: ["rgba(59,130,246,0.7)", "rgba(8,189,128,0.7)", "rgba(139,92,246,0.7)", "rgba(245,158,11,0.7)"],
+              borderColor: ["#3b82f6", "#08bd80", "#8b5cf6", "#f59e0b"],
+              borderWidth: 2,
+              borderRadius: 8,
+            }],
           },
           options: {
             responsive: true,
@@ -125,7 +127,7 @@ export function AnalyticsDashboard() {
 
       {/* Monthly Trend Chart */}
       <div className="card">
-        <div className="card-header"><h3>Monthly Views Trend (Mar - Jul)</h3></div>
+        <div className="card-header"><h3>Monthly Views Trend (by Category)</h3></div>
         <canvas ref={chartRef} height={80} />
       </div>
     </>

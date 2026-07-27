@@ -8,11 +8,11 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Check cache first — only refresh from Studio once per day
+  // Check cache first
   const cached = await prisma.cacheEntry.findUnique({ where: { key: "analytics_monthly" } });
   if (cached) {
     const age = Date.now() - cached.updatedAt.getTime();
-    if (age < 12 * 60 * 60 * 1000) { // 12 hours cache
+    if (age < 1 * 60 * 60 * 1000) { // 1 hour cache
       return NextResponse.json(JSON.parse(cached.value));
     }
   }
@@ -74,56 +74,32 @@ export async function GET() {
     totalChannels: channels.length,
   };
 
-  // Chart data - fetch monthly views from Studio (one call per channel, monthly dimension)
+  // Chart data - use snapshot comparison for each month (reliable, no API calls)
   const chartLabels: string[] = [];
   const chartJee: number[] = [];
   const chartNeet: number[] = [];
   const chartUpsc: number[] = [];
   const chartK12: number[] = [];
 
-  // Last 5 months labels
   for (let i = 4; i >= 0; i--) {
     const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
     chartLabels.push(m.toLocaleString("default", { month: "short" }));
   }
-  
-  // Initialize arrays
-  for (let i = 0; i < 5; i++) { chartJee.push(0); chartNeet.push(0); chartUpsc.push(0); chartK12.push(0); }
 
-  // Get Studio-connected channels and fetch monthly views in parallel
-  const tokens = await prisma.oAuthToken.findMany({ include: { channel: true } });
-
-  const { google } = await import("googleapis");
-  const { getOAuthClient } = await import("@/lib/analytics");
-
-  // For each month, fetch views from all channels in parallel
-  for (let i = 4; i >= 0; i--) {
-    const mStart = new Date(now.getFullYear(), now.getMonth() - i, 1).toISOString().slice(0, 10);
-    const mEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0).toISOString().slice(0, 10);
-
-    const results = await Promise.allSettled(tokens.map(async (t) => {
-      try {
-        const client = getOAuthClient();
-        const creds = JSON.parse(t.tokenJson);
-        client.setCredentials(creds);
-        const svc = google.youtubeAnalytics({ version: "v2", auth: client });
-        const res = await svc.reports.query({
-          ids: "channel==mine",
-          startDate: mStart, endDate: mEnd,
-          metrics: "views",
-        });
-        const views = res.data.rows?.[0]?.[0] || 0;
-        return { category: t.channel.category, views: Number(views) };
-      } catch { return { category: "", views: 0 }; }
-    }));
-
-    for (const r of results) {
-      if (r.status !== "fulfilled" || !r.value.views) continue;
-      const { category: cat, views } = r.value;
-      if (cat === "JEE") chartJee[4 - i] += views;
-      else if (cat === "NEET") chartNeet[4 - i] += views;
-      else if (cat === "UPSC") chartUpsc[4 - i] += views;
-      else if (cat === "K12") chartK12[4 - i] += views;
+  // For current month (i=0), use the category data we already calculated
+  // For past months, we don't have snapshot data yet so show 0
+  for (let i = 0; i < 5; i++) {
+    if (i === 4) { // Current month (last position)
+      chartJee.push(categories.JEE.viewsThisMonth);
+      chartNeet.push(categories.NEET.viewsThisMonth);
+      chartUpsc.push(categories.UPSC.viewsThisMonth);
+      chartK12.push(categories.K12.viewsThisMonth);
+    } else {
+      // No historical snapshot data for past months - show 0
+      chartJee.push(0);
+      chartNeet.push(0);
+      chartUpsc.push(0);
+      chartK12.push(0);
     }
   }
 

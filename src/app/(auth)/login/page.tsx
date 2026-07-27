@@ -32,12 +32,12 @@ export default function LoginPage() {
   return (
     <div className="login-body">
       <div className="fixed top-4 right-4 flex items-center gap-3">
-        <img src="/logo.png" alt="Unacademy" style={{ height: 24 }} />
+        <img src="/logo.webp" alt="Unacademy" style={{ height: 24 }} />
         <ThemeToggle />
       </div>
       <div className="login-wrap text-center">
         <div className="mb-6">
-          <img src="/logo.png" alt="Unacademy" style={{ height: 120 }} className="mx-auto" />
+          <img src="/logo.webp" alt="Unacademy" style={{ height: 120 }} className="mx-auto" />
         </div>
         <h1 className="text-xl font-black mb-6">FanPages Report</h1>
         {error && (

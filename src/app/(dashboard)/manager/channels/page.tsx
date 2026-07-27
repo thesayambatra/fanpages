@@ -205,7 +205,8 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
           <a href={`?from=${thisMonth}&to=${today}&employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">This Month</a>
           <a href={`?from=${lastMonth}&to=${lastMonthEnd}&employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">Last Month</a>
           <a href={`?employee_id=${employeeId}&category=${category}&sort=${sortBy}`} className="btn-outline btn-sm">All Time</a>
-          <a href={exportUrl} className="btn-primary btn-sm" target="_blank">📥 Export Filtered</a>
+          <a href={exportUrl} className="btn-primary btn-sm" target="_blank">📥 Export Excel</a>
+          <a href="/api/export-csv" className="btn-outline btn-sm" target="_blank">📊 Export CSV Report</a>
         </div>
       </div>
 

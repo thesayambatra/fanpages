@@ -25,18 +25,20 @@ export function AnalyticsDashboard() {
       if (chartRef.current) {
         if (chartInst.current) chartInst.current.destroy();
         const cd = data.chartData;
-        // Use bar chart - shows current month data clearly
         chartInst.current = new window.Chart(chartRef.current, {
-          type: "bar",
+          type: "line",
           data: {
-            labels: ["JEE", "NEET", "UPSC", "K12"],
+            labels: cd.labels,
             datasets: [{
-              label: "Views This Month",
-              data: [cd.jee[4] || 0, cd.neet[4] || 0, cd.upsc[4] || 0, cd.k12[4] || 0],
-              backgroundColor: ["rgba(59,130,246,0.7)", "rgba(8,189,128,0.7)", "rgba(139,92,246,0.7)", "rgba(245,158,11,0.7)"],
-              borderColor: ["#3b82f6", "#08bd80", "#8b5cf6", "#f59e0b"],
-              borderWidth: 2,
-              borderRadius: 8,
+              label: "Monthly Views",
+              data: cd.views,
+              borderColor: "#08bd80",
+              backgroundColor: "rgba(8,189,128,0.15)",
+              tension: 0.4,
+              fill: true,
+              pointRadius: 6,
+              pointBackgroundColor: "#08bd80",
+              borderWidth: 3,
             }],
           },
           options: {
@@ -127,7 +129,7 @@ export function AnalyticsDashboard() {
 
       {/* Monthly Trend Chart */}
       <div className="card">
-        <div className="card-header"><h3>Monthly Views Trend (by Category)</h3></div>
+        <div className="card-header"><h3>Monthly Views Trend</h3></div>
         <canvas ref={chartRef} height={80} />
       </div>
     </>

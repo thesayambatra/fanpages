@@ -74,39 +74,27 @@ export async function GET() {
     totalChannels: channels.length,
   };
 
-  // Chart data - use snapshot comparison for each month (reliable, no API calls)
+  // Chart data - monthly views trend (last 3 months)
+  // Shows current month from snapshots, past months empty (will fill as data accumulates)
   const chartLabels: string[] = [];
-  const chartJee: number[] = [];
-  const chartNeet: number[] = [];
-  const chartUpsc: number[] = [];
-  const chartK12: number[] = [];
+  const chartViews: number[] = [];
 
-  for (let i = 4; i >= 0; i--) {
+  for (let i = 2; i >= 0; i--) {
     const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    chartLabels.push(m.toLocaleString("default", { month: "short" }));
-  }
-
-  // For current month (i=0), use the category data we already calculated
-  // For past months, we don't have snapshot data yet so show 0
-  for (let i = 0; i < 5; i++) {
-    if (i === 4) { // Current month (last position)
-      chartJee.push(categories.JEE.viewsThisMonth);
-      chartNeet.push(categories.NEET.viewsThisMonth);
-      chartUpsc.push(categories.UPSC.viewsThisMonth);
-      chartK12.push(categories.K12.viewsThisMonth);
+    chartLabels.push(m.toLocaleString("default", { month: "short", year: "numeric" }));
+    if (i === 0) {
+      // Current month — use total from all categories
+      chartViews.push(summary.viewsThisMonth);
     } else {
-      // No historical snapshot data for past months - show 0
-      chartJee.push(0);
-      chartNeet.push(0);
-      chartUpsc.push(0);
-      chartK12.push(0);
+      // Past months — no data yet, leave empty
+      chartViews.push(0);
     }
   }
 
   const responseData = {
     summary,
     categories,
-    chartData: { labels: chartLabels, jee: chartJee, neet: chartNeet, upsc: chartUpsc, k12: chartK12 },
+    chartData: { labels: chartLabels, views: chartViews },
   };
 
   // Save to cache

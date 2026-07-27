@@ -67,6 +67,7 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+        <p className="text-xs text-[var(--muted)] mt-6">Made by Sayam Batra</p>
       </div>
     </div>
   );

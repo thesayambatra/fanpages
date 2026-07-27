@@ -99,6 +99,11 @@ export default async function ManagerDashboard() {
           <div className="stat-val">{totalViews.toLocaleString()}</div>
           <div className="stat-label">Total Views</div>
         </div>
+        <div className="stat-card" style={{ borderLeft: "3px solid #08bd80" }}>
+          <div className="stat-icon">📅</div>
+          <div className="stat-val" style={{ color: "#08bd80" }}>+{leaderboard.reduce((s, r) => s + Math.max(0, r.monthlyViews), 0).toLocaleString()}</div>
+          <div className="stat-label">Views This Month</div>
+        </div>
       </div>
 
       {/* Intern Leaderboard */}

@@ -68,7 +68,7 @@ export default async function TeamPage() {
           </div>
           <div className="org-info">
             <div className="org-name text-lg">{manager?.fullName}</div>
-            <div className="org-role">Manager — Can see & manage everything</div>
+            <div className="org-role">Manager</div>
           </div>
           {currentUser.id == manager?.id && <span className="tag !border-[var(--red)]/30 !text-[var(--red)] ml-2">You</span>}
         </div>

@@ -12,7 +12,7 @@ export async function GET() {
   const cached = await prisma.cacheEntry.findUnique({ where: { key: "analytics_monthly" } });
   if (cached) {
     const age = Date.now() - cached.updatedAt.getTime();
-    if (age < 6 * 60 * 60 * 1000) { // 6 hours cache
+    if (age < 12 * 60 * 60 * 1000) { // 12 hours cache
       return NextResponse.json(JSON.parse(cached.value));
     }
   }
@@ -92,54 +92,38 @@ export async function GET() {
 
   // Get Studio-connected channels and fetch monthly views in parallel
   const tokens = await prisma.oAuthToken.findMany({ include: { channel: true } });
-  const startDate = new Date(now.getFullYear(), now.getMonth() - 4, 1).toISOString().slice(0, 10);
-  const endDate = now.toISOString().slice(0, 10);
 
   const { google } = await import("googleapis");
   const { getOAuthClient } = await import("@/lib/analytics");
 
-  const fetchMonthlyForChannel = async (t: any) => {
-    try {
-      const client = getOAuthClient();
-      const creds = JSON.parse(t.tokenJson);
-      client.setCredentials(creds);
-      if (creds.expiry_date && Date.now() > creds.expiry_date) {
-        const { credentials } = await client.refreshAccessToken();
-        client.setCredentials(credentials);
-      }
-      const svc = google.youtubeAnalytics({ version: "v2", auth: client });
-      const res = await svc.reports.query({
-        ids: "channel==mine",
-        startDate, endDate,
-        metrics: "views",
-        dimensions: "month",
-        sort: "month",
-      });
-      return { category: t.channel.category, rows: res.data.rows || [] };
-    } catch { return { category: t.channel.category, rows: [] }; }
-  };
+  // For each month, fetch views from all channels in parallel
+  for (let i = 4; i >= 0; i--) {
+    const mStart = new Date(now.getFullYear(), now.getMonth() - i, 1).toISOString().slice(0, 10);
+    const mEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0).toISOString().slice(0, 10);
 
-  // Fetch in parallel batches of 10
-  for (let i = 0; i < tokens.length; i += 10) {
-    const batch = tokens.slice(i, i + 10);
-    const results = await Promise.allSettled(batch.map(fetchMonthlyForChannel));
-    for (const r of results) {
-      if (r.status !== "fulfilled") continue;
-      const { category: cat, rows } = r.value;
-      for (const row of rows) {
-        const monthStr = String(row[0]); // format: "2026-03"
-        const views = Number(row[1]) || 0;
-        // Find which index this month maps to
-        const monthIdx = chartLabels.findIndex(l => {
-          const d = new Date(monthStr + "-01");
-          return d.toLocaleString("default", { month: "short" }) === l;
+    const results = await Promise.allSettled(tokens.map(async (t) => {
+      try {
+        const client = getOAuthClient();
+        const creds = JSON.parse(t.tokenJson);
+        client.setCredentials(creds);
+        const svc = google.youtubeAnalytics({ version: "v2", auth: client });
+        const res = await svc.reports.query({
+          ids: "channel==mine",
+          startDate: mStart, endDate: mEnd,
+          metrics: "views",
         });
-        if (monthIdx === -1) continue;
-        if (cat === "JEE") chartJee[monthIdx] += views;
-        else if (cat === "NEET") chartNeet[monthIdx] += views;
-        else if (cat === "UPSC") chartUpsc[monthIdx] += views;
-        else if (cat === "K12") chartK12[monthIdx] += views;
-      }
+        const views = res.data.rows?.[0]?.[0] || 0;
+        return { category: t.channel.category, views: Number(views) };
+      } catch { return { category: "", views: 0 }; }
+    }));
+
+    for (const r of results) {
+      if (r.status !== "fulfilled" || !r.value.views) continue;
+      const { category: cat, views } = r.value;
+      if (cat === "JEE") chartJee[4 - i] += views;
+      else if (cat === "NEET") chartNeet[4 - i] += views;
+      else if (cat === "UPSC") chartUpsc[4 - i] += views;
+      else if (cat === "K12") chartK12[4 - i] += views;
     }
   }
 

@@ -40,7 +40,7 @@ export default function LoginPage() {
           <img src="/logo.png" alt="Unacademy" style={{ height: 120 }} className="mx-auto" />
         </div>
         <h1 className="text-xl font-black mb-1">FanPages Report</h1>
-        <p className="text-xs text-[var(--muted)] mb-6">YouTube Shorts Analytics Platform</p>
+        <p className="text-xs text-[var(--muted)] mb-6">Unacademy FanPages Management Tool</p>
         {error && (
           <div className="mb-4 px-3 py-2 rounded-lg bg-red-900/30 border border-red-700/40 text-red-400 text-sm">
             {error}

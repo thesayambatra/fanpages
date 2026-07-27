@@ -8,6 +8,7 @@ import { ChannelActions } from "@/components/ChannelActions";
 import { BulkAddChannels } from "@/components/BulkAddChannels";
 import { StudioConnect } from "@/components/StudioConnect";
 import { RefreshAllButton } from "@/components/RefreshAllButton";
+import { MonthlyViewsCard } from "@/components/MonthlyViewsCard";
 
 function getHealthIndicator(views: number) {
   if (views > 100000) return { emoji: "🟢", label: "Active" };
@@ -108,28 +109,6 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
   const totalVideos = filtered.reduce((sum, c) => sum + c.videoCount, 0);
   const avgViewsPerChannel = filtered.length > 0 ? Math.round(totalViews / filtered.length) : 0;
 
-  // Calculate views this month from snapshots (fast, no API calls)
-  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  let viewsThisMonth = 0;
-  let studioChannelCount = 0;
-  let studioFailed = 0;
-  const tokensForChannels = await prisma.oAuthToken.findMany();
-
-  for (const ch of channels) {
-    const earliestThisMonth = await prisma.snapshot.findFirst({
-      where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
-      orderBy: { fetchedAt: "asc" },
-    });
-    const latest = await prisma.snapshot.findFirst({
-      where: { channelId: ch.id },
-      orderBy: { fetchedAt: "desc" },
-    });
-    if (earliestThisMonth && latest && latest.id !== earliestThisMonth.id) {
-      viewsThisMonth += (latest.totalViews - earliestThisMonth.totalViews);
-      studioChannelCount++;
-    }
-  }
-
   // Build export URL with current filters
   const exportParams = new URLSearchParams();
   if (employeeId !== "all") exportParams.set("employee_id", employeeId);
@@ -157,11 +136,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
           <div className="text-xs text-[var(--muted)]">Total Views</div>
           <div className="text-2xl font-bold" style={{ color: "var(--red)" }}>{totalViews.toLocaleString()}</div>
         </div>
-        <div className="stat-card">
-          <div className="text-xs text-[var(--muted)]">Views This Month</div>
-          <div className="text-2xl font-bold" style={{ color: "#10b981" }}>{viewsThisMonth > 0 ? "+" : ""}{viewsThisMonth.toLocaleString()}</div>
-          <div className="text-[10px] text-[var(--muted)] mt-1">{studioChannelCount} channels with data</div>
-        </div>
+        <MonthlyViewsCard />
         <div className="stat-card">
           <div className="text-xs text-[var(--muted)]">Total Subscribers</div>
           <div className="text-2xl font-bold">{totalSubscribers.toLocaleString()}</div>

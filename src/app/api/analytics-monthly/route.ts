@@ -8,6 +8,15 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Check cache first — only refresh from Studio once per day
+  const cached = await prisma.cacheEntry.findUnique({ where: { key: "analytics_monthly" } });
+  if (cached) {
+    const age = Date.now() - cached.updatedAt.getTime();
+    if (age < 6 * 60 * 60 * 1000) { // 6 hours cache
+      return NextResponse.json(JSON.parse(cached.value));
+    }
+  }
+
   const channels = await prisma.channel.findMany();
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -134,9 +143,18 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({
+  const responseData = {
     summary,
     categories,
     chartData: { labels: chartLabels, jee: chartJee, neet: chartNeet, upsc: chartUpsc, k12: chartK12 },
+  };
+
+  // Save to cache
+  await prisma.cacheEntry.upsert({
+    where: { key: "analytics_monthly" },
+    update: { value: JSON.stringify(responseData), updatedAt: new Date() },
+    create: { key: "analytics_monthly", value: JSON.stringify(responseData) },
   });
+
+  return NextResponse.json(responseData);
 }

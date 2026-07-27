@@ -65,29 +65,20 @@ export async function GET() {
     totalChannels: channels.length,
   };
 
-  // Chart data - last 6 months (placeholder structure, fills as data accumulates)
+  // Chart data - only show months with actual data
   const chartLabels: string[] = [];
   const chartJee: number[] = [];
   const chartNeet: number[] = [];
   const chartUpsc: number[] = [];
   const chartK12: number[] = [];
 
-  for (let i = 5; i >= 0; i--) {
-    const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    chartLabels.push(m.toLocaleString("default", { month: "short" }));
-    // For current month use actual data, for past months show 0 (no historical data yet)
-    if (i === 0) {
-      chartJee.push(categories.JEE.viewsThisMonth);
-      chartNeet.push(categories.NEET.viewsThisMonth);
-      chartUpsc.push(categories.UPSC.viewsThisMonth);
-      chartK12.push(categories.K12.viewsThisMonth);
-    } else {
-      chartJee.push(0);
-      chartNeet.push(0);
-      chartUpsc.push(0);
-      chartK12.push(0);
-    }
-  }
+  // Current month data
+  const currentMonthLabel = now.toLocaleString("default", { month: "short", year: "numeric" });
+  chartLabels.push(currentMonthLabel);
+  chartJee.push(categories.JEE.viewsThisMonth);
+  chartNeet.push(categories.NEET.viewsThisMonth);
+  chartUpsc.push(categories.UPSC.viewsThisMonth);
+  chartK12.push(categories.K12.viewsThisMonth);
 
   return NextResponse.json({
     summary,

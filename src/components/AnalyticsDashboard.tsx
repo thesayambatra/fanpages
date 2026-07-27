@@ -4,138 +4,152 @@ import Script from "next/script";
 
 declare global { interface Window { Chart: any } }
 
-function fmt(n: number) { return (n || 0).toLocaleString(); }
-
 export function AnalyticsDashboard() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCat, setSelectedCat] = useState("all");
   const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstance = useRef<any>(null);
+  const subsChartRef = useRef<HTMLCanvasElement>(null);
+  const chartInst = useRef<any>(null);
+  const subsChartInst = useRef<any>(null);
 
   useEffect(() => {
-    fetch("/api/analytics-data")
+    fetch("/api/analytics-monthly")
       .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); })
+      .then(d => { setData(Array.isArray(d) ? d : []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    if (!data || !window.Chart || !chartRef.current) return;
-    if (chartInstance.current) chartInstance.current.destroy();
+    if (!data.length) return;
+    const init = () => {
+      if (!window.Chart) return setTimeout(init, 300);
+      
+      // Views chart
+      if (chartRef.current) {
+        if (chartInst.current) chartInst.current.destroy();
+        chartInst.current = new window.Chart(chartRef.current, {
+          type: "bar",
+          data: {
+            labels: data.map(d => d.label),
+            datasets: [{
+              label: "Monthly Views",
+              data: data.map(d => d.views),
+              backgroundColor: "rgba(8, 189, 128, 0.6)",
+              borderColor: "#08bd80",
+              borderWidth: 2,
+              borderRadius: 8,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: "#718096" } } },
+            scales: {
+              x: { ticks: { color: "#718096" }, grid: { display: false } },
+              y: { ticks: { color: "#718096", callback: (v: number) => v >= 1000000 ? (v/1000000).toFixed(1) + "M" : v >= 1000 ? (v/1000).toFixed(0) + "K" : v }, grid: { color: "rgba(0,0,0,0.05)" } }
+            }
+          }
+        });
+      }
 
-    const colors: Record<string, string> = { JEE: "#3b82f6", NEET: "#08bd80", UPSC: "#8b5cf6", K12: "#f59e0b" };
-    const datasets = selectedCat === "all"
-      ? Object.entries(data.categories).map(([cat, d]: [string, any]) => ({
-          label: cat,
-          data: d.monthlyViews,
-          borderColor: colors[cat] || "#999",
-          backgroundColor: (colors[cat] || "#999") + "20",
-          tension: 0.4,
-          fill: true,
-        }))
-      : [{
-          label: selectedCat,
-          data: data.categories[selectedCat]?.monthlyViews || [],
-          borderColor: colors[selectedCat] || "#3b82f6",
-          backgroundColor: (colors[selectedCat] || "#3b82f6") + "20",
-          tension: 0.4,
-          fill: true,
-        }];
+      // Subscribers chart
+      if (subsChartRef.current) {
+        if (subsChartInst.current) subsChartInst.current.destroy();
+        subsChartInst.current = new window.Chart(subsChartRef.current, {
+          type: "line",
+          data: {
+            labels: data.map(d => d.label),
+            datasets: [{
+              label: "Subscribers Growth",
+              data: data.map(d => d.subs),
+              borderColor: "#3b82f6",
+              backgroundColor: "rgba(59, 130, 246, 0.1)",
+              tension: 0.4,
+              fill: true,
+              pointRadius: 5,
+              pointBackgroundColor: "#3b82f6",
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: "#718096" } } },
+            scales: {
+              x: { ticks: { color: "#718096" }, grid: { display: false } },
+              y: { ticks: { color: "#718096" }, grid: { color: "rgba(0,0,0,0.05)" } }
+            }
+          }
+        });
+      }
+    };
+    init();
+  }, [data]);
 
-    chartInstance.current = new window.Chart(chartRef.current, {
-      type: "line",
-      data: { labels: data.months, datasets },
-      options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: "var(--muted)", font: { size: 11 } } } },
-        scales: {
-          x: { ticks: { color: "#888" }, grid: { color: "rgba(0,0,0,0.05)" } },
-          y: { ticks: { color: "#888" }, grid: { color: "rgba(0,0,0,0.05)" } },
-        },
-      },
-    });
-  }, [data, selectedCat]);
-
-  if (loading) return <div className="card text-center py-10 text-[var(--muted)]">Loading analytics...</div>;
-  if (!data) return <div className="card text-center py-10 text-[var(--muted)]">No data available</div>;
-
-  const categories = ["JEE", "NEET", "UPSC", "K12"];
-  const allViewsThisMonth = categories.reduce((s, c) => s + (data.categories[c]?.viewsThisMonth || 0), 0);
-  const allViewsLastMonth = categories.reduce((s, c) => s + (data.categories[c]?.viewsLastMonth || 0), 0);
-  const allPosts = categories.reduce((s, c) => s + (data.categories[c]?.totalPosts || 0), 0);
+  const totalViews = data.reduce((s, d) => s + d.views, 0);
+  const totalSubs = data.reduce((s, d) => s + d.subs, 0);
 
   return (
     <>
       <Script src="https://cdn.jsdelivr.net/npm/chart.js" strategy="afterInteractive" />
-      <div className="page-header"><h2>📊 Analytics</h2></div>
+      <div className="page-header"><h2>📊 Monthly Analytics</h2></div>
 
-      {/* Category Filter */}
-      <div className="card" style={{ padding: "0.75rem 1rem", marginBottom: "1rem" }}>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[var(--muted)] uppercase">Category:</span>
-          {["all", ...categories].map(c => (
-            <button
-              key={c}
-              onClick={() => setSelectedCat(c)}
-              className={`btn-sm rounded-full font-semibold ${selectedCat === c ? "btn-primary" : "btn-outline"}`}
-            >
-              {c === "all" ? "All Categories" : c}
-            </button>
-          ))}
+      {loading ? (
+        <div className="card text-center py-10 text-[var(--muted)]">Loading analytics...</div>
+      ) : data.length === 0 ? (
+        <div className="card text-center py-10 text-[var(--muted)]">
+          No monthly data yet. Data accumulates as channels are refreshed daily.
         </div>
-      </div>
-
-      {/* Overall Stats */}
-      <div className="stat-grid">
-        <div className="stat-card">
-          <div className="stat-val" style={{ color: "#08bd80" }}>+{fmt(allViewsThisMonth)}</div>
-          <div className="stat-label">Views This Month</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-val">+{fmt(allViewsLastMonth)}</div>
-          <div className="stat-label">Views Last Month</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-val">{allPosts}</div>
-          <div className="stat-label">Posts This Month</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-val">{data.totalChannels}</div>
-          <div className="stat-label">Total Channels</div>
-        </div>
-      </div>
-
-      {/* Category Breakdown Cards */}
-      <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-        {categories.map(cat => {
-          const d = data.categories[cat];
-          if (!d) return null;
-          const growth = d.viewsLastMonth > 0 ? (((d.viewsThisMonth - d.viewsLastMonth) / d.viewsLastMonth) * 100).toFixed(1) : "0";
-          return (
-            <div key={cat} className="card" style={{ padding: "1rem", marginBottom: 0 }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="tag">{cat}</span>
-                <span className={`text-xs font-bold ${Number(growth) >= 0 ? "text-green-500" : "text-red-500"}`}>
-                  {Number(growth) >= 0 ? "↑" : "↓"} {growth}%
-                </span>
-              </div>
-              <div className="text-lg font-black" style={{ color: "#08bd80" }}>+{fmt(d.viewsThisMonth)}</div>
-              <div className="text-[10px] text-[var(--muted)]">This Month</div>
-              <div className="flex justify-between mt-2 text-xs text-[var(--muted)]">
-                <span>Last Month: +{fmt(d.viewsLastMonth)}</span>
-                <span>{d.totalPosts} posts</span>
-              </div>
+      ) : (
+        <>
+          {/* Summary */}
+          <div className="stat-grid">
+            <div className="stat-card">
+              <div className="stat-val" style={{ color: "#08bd80" }}>+{totalViews.toLocaleString()}</div>
+              <div className="stat-label">Total View Growth</div>
             </div>
-          );
-        })}
-      </div>
+            <div className="stat-card">
+              <div className="stat-val" style={{ color: "#3b82f6" }}>+{totalSubs.toLocaleString()}</div>
+              <div className="stat-label">Total Sub Growth</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val">{data.length}</div>
+              <div className="stat-label">Months Tracked</div>
+            </div>
+          </div>
 
-      {/* Monthly Views Chart */}
-      <div className="card">
-        <div className="card-header"><h3>Monthly Views Trend (Last 6 Months)</h3></div>
-        <canvas ref={chartRef} height={100} />
-      </div>
+          {/* Monthly Views Chart */}
+          <div className="card">
+            <div className="card-header"><h3>Monthly Views Growth</h3></div>
+            <canvas ref={chartRef} height={80} />
+          </div>
+
+          {/* Subscribers Chart */}
+          <div className="card">
+            <div className="card-header"><h3>Monthly Subscriber Growth</h3></div>
+            <canvas ref={subsChartRef} height={80} />
+          </div>
+
+          {/* Monthly Table */}
+          <div className="card">
+            <div className="card-header"><h3>Month-by-Month Breakdown</h3></div>
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr><th>Month</th><th>Views Growth</th><th>Sub Growth</th><th>Channels</th></tr>
+                </thead>
+                <tbody>
+                  {[...data].reverse().map(d => (
+                    <tr key={d.month}>
+                      <td className="font-semibold">{d.label}</td>
+                      <td className="font-bold" style={{ color: "#08bd80" }}>+{d.views.toLocaleString()}</td>
+                      <td style={{ color: "#3b82f6" }}>+{d.subs.toLocaleString()}</td>
+                      <td>{d.channels}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

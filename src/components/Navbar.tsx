@@ -39,7 +39,9 @@ export function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="nav-brand">▶ Unacademy FanPages</div>
+      <div className="nav-brand">
+        <span style={{ color: "#08bd80" }}>●</span> <span style={{ color: "#3b82f6" }}>un</span><span style={{ color: "#08bd80" }}>academy</span> <span className="text-xs font-normal text-[var(--muted)]">FanPages</span>
+      </div>
       <div className="nav-links">
         {links.map((l) => (
           <Link

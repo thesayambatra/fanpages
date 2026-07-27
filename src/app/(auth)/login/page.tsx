@@ -37,7 +37,7 @@ export default function LoginPage() {
       </div>
       <div className="login-wrap text-center">
         <div className="mb-6">
-          <img src="/logo.png" alt="Unacademy" style={{ height: 60 }} className="mx-auto" />
+          <img src="/logo.png" alt="Unacademy" style={{ height: 120 }} className="mx-auto" />
         </div>
         <h1 className="text-xl font-black mb-1">FanPages Report</h1>
         <p className="text-xs text-[var(--muted)] mb-6">YouTube Shorts Analytics Platform</p>

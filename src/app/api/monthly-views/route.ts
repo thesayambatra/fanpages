@@ -13,7 +13,7 @@ export async function GET() {
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
   const today = new Date().toISOString().slice(0, 10);
 
-  const tokens = await prisma.oAuthToken.findMany({ include: { channel: true }, take: 5 });
+  const tokens = await prisma.oAuthToken.findMany({ include: { channel: true } });
   let totalViews = 0;
   let success = 0;
   let failed = 0;

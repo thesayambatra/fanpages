@@ -65,20 +65,44 @@ export async function GET() {
     totalChannels: channels.length,
   };
 
-  // Chart data - only show months with actual data
+  // Chart data - fetch from Studio API for last 5 months (March to July)
   const chartLabels: string[] = [];
   const chartJee: number[] = [];
   const chartNeet: number[] = [];
   const chartUpsc: number[] = [];
   const chartK12: number[] = [];
 
-  // Current month data
-  const currentMonthLabel = now.toLocaleString("default", { month: "short", year: "numeric" });
-  chartLabels.push(currentMonthLabel);
-  chartJee.push(categories.JEE.viewsThisMonth);
-  chartNeet.push(categories.NEET.viewsThisMonth);
-  chartUpsc.push(categories.UPSC.viewsThisMonth);
-  chartK12.push(categories.K12.viewsThisMonth);
+  // Get Studio-connected channels
+  const tokens = await prisma.oAuthToken.findMany({ include: { channel: true } });
+  
+  for (let i = 4; i >= 0; i--) {
+    const mStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const mEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+    const startStr = mStart.toISOString().slice(0, 10);
+    const endStr = mEnd.toISOString().slice(0, 10);
+    chartLabels.push(mStart.toLocaleString("default", { month: "short" }));
+
+    let jeeViews = 0, neetViews = 0, upscViews = 0, k12Views = 0;
+
+    for (const t of tokens) {
+      try {
+        const { fetchStudioAnalytics } = await import("@/lib/analytics");
+        const result = await fetchStudioAnalytics(t.tokenJson, t.channel.channelId, startStr, endStr);
+        if (result && !result.error && result.overview?.views) {
+          const cat = t.channel.category || "Other";
+          if (cat === "JEE") jeeViews += result.overview.views;
+          else if (cat === "NEET") neetViews += result.overview.views;
+          else if (cat === "UPSC") upscViews += result.overview.views;
+          else if (cat === "K12") k12Views += result.overview.views;
+        }
+      } catch {}
+    }
+
+    chartJee.push(jeeViews);
+    chartNeet.push(neetViews);
+    chartUpsc.push(upscViews);
+    chartK12.push(k12Views);
+  }
 
   return NextResponse.json({
     summary,

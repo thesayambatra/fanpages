@@ -25,16 +25,16 @@ export function AnalyticsDashboard() {
       if (chartRef.current) {
         if (chartInst.current) chartInst.current.destroy();
         const cd = data.chartData;
-        const chartType = cd.labels.length <= 2 ? "bar" : "line";
+        const chartType = "line";
         chartInst.current = new window.Chart(chartRef.current, {
           type: chartType,
           data: {
             labels: cd.labels,
             datasets: [
-              { label: "JEE", data: cd.jee, borderColor: "#3b82f6", backgroundColor: "rgba(59,130,246,0.6)", tension: 0.4, fill: chartType === "line", borderRadius: 8 },
-              { label: "NEET", data: cd.neet, borderColor: "#08bd80", backgroundColor: "rgba(8,189,128,0.6)", tension: 0.4, fill: chartType === "line", borderRadius: 8 },
-              { label: "UPSC", data: cd.upsc, borderColor: "#8b5cf6", backgroundColor: "rgba(139,92,246,0.6)", tension: 0.4, fill: chartType === "line", borderRadius: 8 },
-              { label: "K12", data: cd.k12, borderColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.6)", tension: 0.4, fill: chartType === "line", borderRadius: 8 },
+              { label: "JEE", data: cd.jee, borderColor: "#3b82f6", backgroundColor: "rgba(59,130,246,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
+              { label: "NEET", data: cd.neet, borderColor: "#08bd80", backgroundColor: "rgba(8,189,128,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
+              { label: "UPSC", data: cd.upsc, borderColor: "#8b5cf6", backgroundColor: "rgba(139,92,246,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
+              { label: "K12", data: cd.k12, borderColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.1)", tension: 0.4, fill: true, pointRadius: 4, borderWidth: 2 },
             ],
           },
           options: {
@@ -125,7 +125,7 @@ export function AnalyticsDashboard() {
 
       {/* Monthly Trend Chart */}
       <div className="card">
-        <div className="card-header"><h3>Views by Category This Month</h3></div>
+        <div className="card-header"><h3>Monthly Views Trend (Mar - Jul)</h3></div>
         <canvas ref={chartRef} height={80} />
       </div>
     </>

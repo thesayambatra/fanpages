@@ -29,23 +29,29 @@ export default async function ManagerDashboard() {
   }
   topChannels.sort((a, b) => b.subs - a.subs);
 
-  // Intern leaderboard
+  // Intern leaderboard - monthly views from snapshot comparison
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const leaderboard: any[] = [];
   for (const intern of interns) {
     const channels = await prisma.channel.findMany({ where: { userId: intern.id } });
-    let subs = 0, views = 0, count = 0;
+    let subs = 0, monthlyViews = 0, count = 0;
     for (const ch of channels) {
-      const snap = await latestSnapshot(ch.id);
-      if (snap) { subs += snap.subscribers; views += snap.totalViews; count++; }
+      const latest = await prisma.snapshot.findFirst({ where: { channelId: ch.id }, orderBy: { fetchedAt: "desc" } });
+      const earliest = await prisma.snapshot.findFirst({ where: { channelId: ch.id, fetchedAt: { gte: monthStart } }, orderBy: { fetchedAt: "asc" } });
+      if (latest) subs += latest.subscribers;
+      if (latest && earliest && latest.id !== earliest.id) {
+        monthlyViews += (latest.totalViews - earliest.totalViews);
+      }
+      if (latest) count++;
     }
     const manager = intern.createdById ? await prisma.user.findUnique({ where: { id: intern.createdById } }) : null;
     leaderboard.push({
       id: intern.id, name: intern.fullName, color: intern.avatarColor,
-      channels: channels.length, subscribers: subs, views,
+      channels: channels.length, subscribers: subs, monthlyViews,
       managedBy: manager?.fullName || "—",
     });
   }
-  leaderboard.sort((a, b) => b.views - a.views);
+  leaderboard.sort((a, b) => b.monthlyViews - a.monthlyViews);
 
   return (
     <>
@@ -114,7 +120,7 @@ export default async function ManagerDashboard() {
               </div>
               <div className="lb-stats">
                 <span>👥 {row.subscribers.toLocaleString()}</span>
-                <span>👁 {row.views.toLocaleString()}</span>
+                <span style={{ color: "var(--red)", fontWeight: "bold" }}>👁 +{row.monthlyViews.toLocaleString()} this month</span>
               </div>
             </div>
           ))}

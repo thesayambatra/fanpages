@@ -6,6 +6,8 @@ export function MonthlyViewsCard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Only fetch once
+    if (data) return;
     fetch("/api/monthly-views")
       .then(r => r.json())
       .then(d => { setData(d); setLoading(false); })

@@ -39,8 +39,14 @@ export function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="nav-brand">
-        <span style={{ color: "#08bd80" }}>●</span> <span style={{ color: "#3b82f6" }}>un</span><span style={{ color: "#08bd80" }}>academy</span> <span className="text-xs font-normal text-[var(--muted)]">FanPages</span>
+      <div className="nav-brand flex items-center gap-2">
+        <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+          <path d="M8 8C8 8 8 20 20 20C32 20 32 8 32 8" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round" fill="none"/>
+          <path d="M8 8L32 8" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round"/>
+          <ellipse cx="20" cy="32" rx="6" ry="4" fill="#08bd80"/>
+        </svg>
+        <span><span style={{ color: "#3b82f6" }}>un</span><span style={{ color: "#08bd80" }}>academy</span></span>
+        <span className="text-[10px] font-medium text-[var(--muted)] ml-1">FanPages</span>
       </div>
       <div className="nav-links">
         {links.map((l) => (

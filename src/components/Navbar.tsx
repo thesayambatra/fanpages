@@ -55,9 +55,9 @@ export function Navbar() {
       </div>
       <div className="flex items-center gap-3">
         <ThemeToggle />
-        <div className="avatar" style={{ background: user.avatarColor }}>
+        <Link href="/profile" className="avatar" style={{ background: user.avatarColor, cursor: "pointer" }}>
           {user.name?.[0] || "?"}
-        </div>
+        </Link>
         <span className="text-sm font-medium">{user.name}</span>
         <span className={`badge ${role}`}>{role}</span>
         <button onClick={() => signOut({ callbackUrl: "/login" })} className="btn-outline btn-sm">

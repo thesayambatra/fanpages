@@ -15,6 +15,7 @@ model User {
   fullName    String   @default("")
   avatarColor String   @default("#ff0000")
   bio         String   @default("")
+  profileImage String  @default("")
   createdAt   DateTime @default(now())
 
   // Interns have a createdBy pointing to the employee who added them

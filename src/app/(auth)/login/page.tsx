@@ -31,15 +31,13 @@ export default function LoginPage() {
 
   return (
     <div className="login-body">
-      <div className="fixed top-5 right-5 flex items-center gap-3">
-        <img src="/logo.webp" alt="Unacademy" style={{ height: 22 }} />
+      {/* Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-16" style={{ background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+        <img src="/logo.webp" alt="Unacademy" style={{ height: 18 }} />
         <ThemeToggle />
       </div>
       <div className="login-wrap text-center">
-        <div className="mb-4">
-          <img src="/logo.webp" alt="Unacademy" style={{ height: 36, width: "auto" }} className="mx-auto" />
-        </div>
-        <h1 className="text-xl font-black mb-6">FanPages Report</h1>
+        <h1 className="text-lg font-bold mb-6">FanPages Report</h1>
         {error && (
           <div className="mb-4 px-3 py-2 rounded-lg bg-red-900/30 border border-red-700/40 text-red-400 text-sm">
             {error}

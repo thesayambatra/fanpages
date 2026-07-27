@@ -59,6 +59,25 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
 
   const enriched = (await Promise.all(channels.map(enrichChannel))).filter(Boolean) as any[];
 
+  // Calculate monthly views per channel from snapshots
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const monthlyViewsMap: Record<number, number> = {};
+  for (const ch of channels) {
+    const earliest = await prisma.snapshot.findFirst({
+      where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
+      orderBy: { fetchedAt: "asc" },
+    });
+    const latest = await prisma.snapshot.findFirst({
+      where: { channelId: ch.id },
+      orderBy: { fetchedAt: "desc" },
+    });
+    if (earliest && latest && earliest.id !== latest.id) {
+      monthlyViewsMap[ch.id] = Math.max(0, latest.totalViews - earliest.totalViews);
+    } else {
+      monthlyViewsMap[ch.id] = 0;
+    }
+  }
+
   // Add oauthToken info
   const channelTokenMap: Record<number, boolean> = {};
   for (const ch of channels) {
@@ -196,7 +215,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
             <thead>
               <tr>
                 <th>#</th><th>Channel</th><th>Health</th><th>Category</th><th>Subscribers</th>
-                <th>Views</th><th>Videos</th><th>Views/Video</th><th>Managed By</th><th>Studio</th><th>Actions</th>
+                <th>Views</th><th>Monthly Views</th><th>Videos</th><th>Views/Video</th><th>Managed By</th><th>Studio</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -219,6 +238,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
                     <td>{ch.category ? <span className="tag">{ch.category}</span> : "—"}</td>
                     <td>{ch.subscribers.toLocaleString()}</td>
                     <td className="font-bold text-lg" style={{ color: "var(--red)" }}>{ch.totalViews.toLocaleString()}</td>
+                    <td className="font-bold" style={{ color: "#08bd80" }}>{monthlyViewsMap[ch.id] ? `+${monthlyViewsMap[ch.id].toLocaleString()}` : "—"}</td>
                     <td>{ch.videoCount}</td>
                     <td className="text-sm">{viewsPerVideo.toLocaleString()}</td>
                     <td className="text-xs">{ch.addedBy}</td>
@@ -233,6 +253,7 @@ export default async function ManagerChannels({ searchParams }: { searchParams: 
                 <td colSpan={4}>Totals ({filtered.length} channels)</td>
                 <td>{totalSubscribers.toLocaleString()}</td>
                 <td style={{ color: "var(--red)" }}>{totalViews.toLocaleString()}</td>
+                <td style={{ color: "#08bd80" }}>+{Object.values(monthlyViewsMap).reduce((a, b) => a + b, 0).toLocaleString()}</td>
                 <td>{totalVideos.toLocaleString()}</td>
                 <td colSpan={4}></td>
               </tr>

@@ -70,11 +70,6 @@ export default async function EmployeeDashboard() {
           <div className="stat-val">{totalViews.toLocaleString()}</div>
           <div className="stat-label">Total Views</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">📈</div>
-          <div className="stat-val">{snapCount ? (totalEng / snapCount).toFixed(2) : 0}%</div>
-          <div className="stat-label">Avg Engagement</div>
-        </div>
       </div>
 
       {/* Intern Leaderboard */}
@@ -84,7 +79,7 @@ export default async function EmployeeDashboard() {
           <div className="table-wrap">
             <table className="data-table">
               <thead>
-                <tr><th>#</th><th>Intern</th><th>Channels</th><th>Subscribers</th><th>Views</th><th>Engagement</th></tr>
+                <tr><th>#</th><th>Intern</th><th>Channels</th><th>Subscribers</th><th>Views</th></tr>
               </thead>
               <tbody>
                 {leaderboard.map((row, i) => (
@@ -101,12 +96,7 @@ export default async function EmployeeDashboard() {
                     </td>
                     <td>{row.channels}</td>
                     <td>{row.subscribers.toLocaleString()}</td>
-                    <td>{row.views.toLocaleString()}</td>
-                    <td>
-                      <span className={`eng-badge ${row.avgEng >= 10 ? "green" : row.avgEng >= 3 ? "orange" : "red"}`}>
-                        {row.avgEng}%
-                      </span>
-                    </td>
+                    <td className="font-bold" style={{ color: "var(--brand-green)" }}>{row.views.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

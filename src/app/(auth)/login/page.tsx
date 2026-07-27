@@ -39,8 +39,7 @@ export default function LoginPage() {
         <div className="mb-6">
           <img src="/logo.png" alt="Unacademy" style={{ height: 120 }} className="mx-auto" />
         </div>
-        <h1 className="text-xl font-black mb-1">FanPages Report</h1>
-        <p className="text-xs text-[var(--muted)] mb-6">Unacademy FanPages Management Tool</p>
+        <h1 className="text-xl font-black mb-6">FanPages Report</h1>
         {error && (
           <div className="mb-4 px-3 py-2 rounded-lg bg-red-900/30 border border-red-700/40 text-red-400 text-sm">
             {error}
@@ -68,7 +67,6 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-        <p className="text-xs text-[var(--muted)] mt-6">Made by Sayam Batra</p>
       </div>
     </div>
   );

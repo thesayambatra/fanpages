@@ -43,9 +43,9 @@ export async function GET(req: NextRequest) {
     try {
       const videos = JSON.parse(snap.topVideos || "[]");
       if (videos.length > 0) {
-        const sorted = videos.sort((a: any, b: any) => (b.views || 0) - (a.views || 0));
-        topVideoViews = sorted[0].views || 0;
-        topVideoLink = sorted[0].url || "";
+        const sorted = [...videos].sort((a: any, b: any) => (b.views || 0) - (a.views || 0));
+        topVideoViews = sorted[0]?.views || 0;
+        topVideoLink = sorted[0]?.url || sorted[0]?.videoId ? `https://youtube.com/watch?v=${sorted[0].videoId}` : "";
       }
     } catch {}
 

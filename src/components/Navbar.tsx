@@ -40,8 +40,8 @@ export function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-brand flex items-center gap-2">
-        <img src="/logo.webp" alt="Unacademy" style={{ height: 36 }} />
-        <span className="text-[10px] font-medium text-[var(--muted)]">FanPages</span>
+        <img src="/logo.webp" alt="Unacademy" style={{ height: 32, width: "auto" }} />
+        <span className="text-sm font-bold text-[var(--text)]">FanPages</span>
       </div>
       <div className="nav-links">
         {links.map((l) => (

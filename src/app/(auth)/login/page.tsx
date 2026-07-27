@@ -32,7 +32,7 @@ export default function LoginPage() {
   return (
     <div className="login-body">
       <div className="fixed top-5 right-5 flex items-center gap-3">
-        <img src="/logo.webp" alt="Unacademy" style={{ height: 32 }} />
+        <img src="/logo.webp" alt="Unacademy" style={{ height: 22 }} />
         <ThemeToggle />
       </div>
       <div className="login-wrap text-center">

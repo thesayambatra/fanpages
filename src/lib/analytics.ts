@@ -6,9 +6,9 @@ const SCOPES = [
 ];
 
 export function getOAuthClient() {
-  const redirectUri = process.env.VERCEL_URL 
-    ? `https://fanpages-five.vercel.app/oauth2callback`
-    : (process.env.NEXTAUTH_URL || "http://localhost:3000") + "/oauth2callback";
+  const redirectUri = process.env.NEXTAUTH_URL 
+    ? `${process.env.NEXTAUTH_URL}/oauth2callback`
+    : "http://localhost:3000/oauth2callback";
   return new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,

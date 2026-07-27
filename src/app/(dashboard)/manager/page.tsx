@@ -29,8 +29,18 @@ export default async function ManagerDashboard() {
   }
   topChannels.sort((a, b) => b.subs - a.subs);
 
-  // Intern leaderboard - monthly views from snapshot comparison
+  // Monthly views for ALL channels
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  let allMonthlyViews = 0;
+  for (const ch of allChannels) {
+    const earliest = await prisma.snapshot.findFirst({ where: { channelId: ch.id, fetchedAt: { gte: monthStart } }, orderBy: { fetchedAt: "asc" } });
+    const latest = await prisma.snapshot.findFirst({ where: { channelId: ch.id }, orderBy: { fetchedAt: "desc" } });
+    if (earliest && latest && earliest.id !== latest.id) {
+      allMonthlyViews += Math.max(0, latest.totalViews - earliest.totalViews);
+    }
+  }
+
+  // Intern leaderboard - monthly views from snapshot comparison
   const leaderboard: any[] = [];
   for (const intern of interns) {
     const channels = await prisma.channel.findMany({ where: { userId: intern.id } });
@@ -101,7 +111,7 @@ export default async function ManagerDashboard() {
         </div>
         <div className="stat-card" style={{ borderLeft: "3px solid #08bd80" }}>
           <div className="stat-icon">📅</div>
-          <div className="stat-val" style={{ color: "#08bd80" }}>+{leaderboard.reduce((s, r) => s + Math.max(0, r.monthlyViews), 0).toLocaleString()}</div>
+          <div className="stat-val" style={{ color: "#08bd80" }}>+{allMonthlyViews.toLocaleString()}</div>
           <div className="stat-label">Views This Month</div>
         </div>
       </div>

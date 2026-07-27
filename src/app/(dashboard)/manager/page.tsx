@@ -29,24 +29,23 @@ export default async function ManagerDashboard() {
   }
   topChannels.sort((a, b) => b.subs - a.subs);
 
-  // Employee leaderboard
+  // Intern leaderboard
   const leaderboard: any[] = [];
-  for (const emp of employees) {
-    const channels = await channelsVisibleTo(emp.id, "employee");
-    const empInterns = await prisma.user.count({ where: { createdById: emp.id } });
-    let subs = 0, views = 0, eng = 0, count = 0;
+  for (const intern of interns) {
+    const channels = await prisma.channel.findMany({ where: { userId: intern.id } });
+    let subs = 0, views = 0, count = 0;
     for (const ch of channels) {
       const snap = await latestSnapshot(ch.id);
-      if (snap) { subs += snap.subscribers; views += snap.totalViews; eng += snap.engagementRate; count++; }
+      if (snap) { subs += snap.subscribers; views += snap.totalViews; count++; }
     }
+    const manager = intern.createdById ? await prisma.user.findUnique({ where: { id: intern.createdById } }) : null;
     leaderboard.push({
-      id: emp.id, name: emp.fullName, color: emp.avatarColor,
-      interns: empInterns, channels: channels.length,
-      subscribers: subs, views, avgEng: count ? +(eng / count).toFixed(2) : 0,
-      score: Math.round(subs * 0.4 + views * 0.3 + (count ? eng / count : 0) * 10000),
+      id: intern.id, name: intern.fullName, color: intern.avatarColor,
+      channels: channels.length, subscribers: subs, views,
+      managedBy: manager?.fullName || "—",
     });
   }
-  leaderboard.sort((a, b) => b.score - a.score);
+  leaderboard.sort((a, b) => b.views - a.views);
 
   return (
     <>
@@ -101,9 +100,9 @@ export default async function ManagerDashboard() {
         </div>
       </div>
 
-      {/* Employee Leaderboard */}
+      {/* Intern Leaderboard */}
       <div className="card">
-        <div className="card-header"><h3>🏆 Employee Leaderboard</h3></div>
+        <div className="card-header"><h3>🏆 Intern Leaderboard</h3></div>
         <div className="leaderboard">
           {leaderboard.map((row, i) => (
             <div key={row.id} className={`lb-row ${i === 0 ? "lb-gold" : i === 1 ? "lb-silver" : i === 2 ? "lb-bronze" : ""}`}>
@@ -111,7 +110,7 @@ export default async function ManagerDashboard() {
               <div className="avatar" style={{ background: row.color }}>{row.name[0]}</div>
               <div className="lb-info">
                 <div className="lb-name">{row.name}</div>
-                <div className="lb-meta">{row.channels} channels · {row.interns} interns</div>
+                <div className="lb-meta">{row.channels} channels · under {row.managedBy}</div>
               </div>
               <div className="lb-stats">
                 <span>👥 {row.subscribers.toLocaleString()}</span>

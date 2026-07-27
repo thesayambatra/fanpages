@@ -40,7 +40,7 @@ export default async function ManagerDashboard() {
       const earliest = await prisma.snapshot.findFirst({ where: { channelId: ch.id, fetchedAt: { gte: monthStart } }, orderBy: { fetchedAt: "asc" } });
       if (latest) subs += latest.subscribers;
       if (latest && earliest && latest.id !== earliest.id) {
-        monthlyViews += (latest.totalViews - earliest.totalViews);
+        monthlyViews += Math.max(0, latest.totalViews - earliest.totalViews);
       }
       if (latest) count++;
     }
@@ -99,11 +99,6 @@ export default async function ManagerDashboard() {
           <div className="stat-val">{totalViews.toLocaleString()}</div>
           <div className="stat-label">Total Views</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">📈</div>
-          <div className="stat-val">{snapCount ? (totalEng / snapCount).toFixed(2) : 0}%</div>
-          <div className="stat-label">Avg Engagement</div>
-        </div>
       </div>
 
       {/* Intern Leaderboard */}
@@ -120,7 +115,7 @@ export default async function ManagerDashboard() {
               </div>
               <div className="lb-stats">
                 <span>👥 {row.subscribers.toLocaleString()}</span>
-                <span style={{ color: "var(--red)", fontWeight: "bold" }}>👁 +{row.monthlyViews.toLocaleString()} this month</span>
+                <span style={{ color: "var(--red)", fontWeight: "bold" }}>👁 +{Math.max(0, row.monthlyViews).toLocaleString()} this month</span>
               </div>
             </div>
           ))}

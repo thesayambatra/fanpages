@@ -74,27 +74,21 @@ export async function GET() {
     totalChannels: channels.length,
   };
 
-  // Chart data - monthly views trend (last 3 months)
-  // Shows current month from snapshots, past months empty (will fill as data accumulates)
-  const chartLabels: string[] = [];
-  const chartViews: number[] = [];
-
-  for (let i = 2; i >= 0; i--) {
-    const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    chartLabels.push(m.toLocaleString("default", { month: "short", year: "numeric" }));
-    if (i === 0) {
-      // Current month — use total from all categories
-      chartViews.push(summary.viewsThisMonth);
-    } else {
-      // Past months — no data yet, leave empty
-      chartViews.push(0);
-    }
-  }
+  // Chart data - monthly views trend by category
+  // Historical data (manually entered) + current month from snapshots
+  const chartLabels = ["Apr", "May", "Jun", "Jul"];
+  const chartData = {
+    labels: chartLabels,
+    jee: [3121348, 0, 0, categories.JEE.viewsThisMonth],
+    neet: [2865906, 0, 0, categories.NEET.viewsThisMonth],
+    k12: [2334266, 0, 0, categories.K12.viewsThisMonth],
+    upsc: [9529210, 0, 0, categories.UPSC.viewsThisMonth],
+  };
 
   const responseData = {
     summary,
     categories,
-    chartData: { labels: chartLabels, views: chartViews },
+    chartData,
   };
 
   // Save to cache

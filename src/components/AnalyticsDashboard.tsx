@@ -29,17 +29,12 @@ export function AnalyticsDashboard() {
           type: "line",
           data: {
             labels: cd.labels,
-            datasets: [{
-              label: "Monthly Views",
-              data: cd.views,
-              borderColor: "#08bd80",
-              backgroundColor: "rgba(8,189,128,0.15)",
-              tension: 0.4,
-              fill: true,
-              pointRadius: 6,
-              pointBackgroundColor: "#08bd80",
-              borderWidth: 3,
-            }],
+            datasets: [
+              { label: "JEE", data: cd.jee, borderColor: "#3b82f6", backgroundColor: "rgba(59,130,246,0.1)", tension: 0.4, fill: false, pointRadius: 5, borderWidth: 2.5 },
+              { label: "NEET", data: cd.neet, borderColor: "#08bd80", backgroundColor: "rgba(8,189,128,0.1)", tension: 0.4, fill: false, pointRadius: 5, borderWidth: 2.5 },
+              { label: "UPSC", data: cd.upsc, borderColor: "#8b5cf6", backgroundColor: "rgba(139,92,246,0.1)", tension: 0.4, fill: false, pointRadius: 5, borderWidth: 2.5 },
+              { label: "K12", data: cd.k12, borderColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.1)", tension: 0.4, fill: false, pointRadius: 5, borderWidth: 2.5 },
+            ],
           },
           options: {
             responsive: true,

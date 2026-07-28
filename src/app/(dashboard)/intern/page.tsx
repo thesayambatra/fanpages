@@ -10,11 +10,32 @@ export default async function InternDashboard() {
   const userId = Number((session.user as any).id);
 
   const channels = await prisma.channel.findMany({ where: { userId } });
-  let totalSubs = 0, totalViews = 0, totalEng = 0, snapCount = 0;
+  let totalSubs = 0, totalViews = 0, snapCount = 0;
+  let monthlyViews = 0;
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const channelData: any[] = [];
+  const categoryViews: Record<string, number> = {};
+
   for (const ch of channels) {
     const snap = await latestSnapshot(ch.id);
-    if (snap) { totalSubs += snap.subscribers; totalViews += snap.totalViews; totalEng += snap.engagementRate; snapCount++; }
+    if (snap) { 
+      totalSubs += snap.subscribers; 
+      totalViews += snap.totalViews; 
+      snapCount++; 
+
+      // Category total
+      const cat = ch.category || "Other";
+      categoryViews[cat] = (categoryViews[cat] || 0) + snap.totalViews;
+
+      // Monthly views
+      const earliest = await prisma.snapshot.findFirst({
+        where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
+        orderBy: { fetchedAt: "asc" },
+      });
+      if (earliest && snap.id !== earliest.id) {
+        monthlyViews += Math.max(0, snap.totalViews - earliest.totalViews);
+      }
+    }
     channelData.push({ ...ch, snap });
   }
 
@@ -41,12 +62,27 @@ export default async function InternDashboard() {
           <div className="stat-val">{totalViews.toLocaleString()}</div>
           <div className="stat-label">Total Views</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">📈</div>
-          <div className="stat-val">{snapCount ? (totalEng / snapCount).toFixed(2) : 0}%</div>
-          <div className="stat-label">Avg Engagement</div>
+        <div className="stat-card" style={{ borderLeft: "3px solid #08bd80" }}>
+          <div className="stat-icon">📅</div>
+          <div className="stat-val" style={{ color: "#08bd80" }}>+{monthlyViews.toLocaleString()}</div>
+          <div className="stat-label">Your Views This Month</div>
         </div>
       </div>
+
+      {/* Category breakdown */}
+      {Object.keys(categoryViews).length > 0 && (
+        <div className="card">
+          <div className="card-header"><h3>Views by Category</h3></div>
+          <div className="stat-grid">
+            {Object.entries(categoryViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
+              <div key={cat} className="stat-card">
+                <div className="stat-val">{views.toLocaleString()}</div>
+                <div className="stat-label">{cat}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card">
         <div className="card-header"><h3>My Channels</h3></div>

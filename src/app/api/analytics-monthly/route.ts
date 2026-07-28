@@ -85,10 +85,19 @@ export async function GET() {
     upsc: [9529210, 0, 6657320, categories.UPSC.viewsThisMonth],
   };
 
+  // Per-month totals for slicer
+  const monthlyTotals: Record<string, any> = {
+    apr: { views: 3121348 + 2865906 + 2334266 + 9529210, jee: 3121348, neet: 2865906, k12: 2334266, upsc: 9529210 },
+    may: { views: 0, jee: 0, neet: 0, k12: 0, upsc: 0 },
+    jun: { views: 32086829 + 1696366 + 1053030 + 6657320, jee: 32086829, neet: 1696366, k12: 1053030, upsc: 6657320 },
+    jul: { views: summary.viewsThisMonth, jee: categories.JEE.viewsThisMonth, neet: categories.NEET.viewsThisMonth, k12: categories.K12.viewsThisMonth, upsc: categories.UPSC.viewsThisMonth },
+  };
+
   const responseData = {
     summary,
     categories,
     chartData,
+    monthlyTotals,
   };
 
   // Save to cache

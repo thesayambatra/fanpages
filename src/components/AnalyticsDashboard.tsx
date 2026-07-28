@@ -8,6 +8,7 @@ export function AnalyticsDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
+  const [month, setMonth] = useState("jul");
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInst = useRef<any>(null);
 
@@ -55,7 +56,10 @@ export function AnalyticsDashboard() {
 
   const cats = data.categories || {};
   const summary = data.summary || {};
-  const filtered = category === "all" ? summary : (cats[category] || {});
+  const monthData = data.monthlyTotals?.[month] || {};
+  const filtered = category === "all" 
+    ? { viewsThisMonth: monthData.views || summary.viewsThisMonth, subsGrowth: summary.subsGrowth, shortsPosted: summary.shortsPosted, totalChannels: summary.totalChannels }
+    : { viewsThisMonth: monthData[category.toLowerCase()] || (cats[category]?.viewsThisMonth || 0), subsGrowth: cats[category]?.subsGrowth || 0, shortsPosted: cats[category]?.shortsPosted || 0, totalChannels: cats[category]?.totalChannels || 0 };
 
   return (
     <>
@@ -64,7 +68,7 @@ export function AnalyticsDashboard() {
 
       {/* Category Filter */}
       <div className="card" style={{ padding: "0.75rem 1rem", marginBottom: "1rem" }}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-bold text-[var(--muted)] uppercase">Category:</span>
           {["all", "JEE", "NEET", "UPSC", "K12"].map(c => (
             <button
@@ -73,6 +77,22 @@ export function AnalyticsDashboard() {
               className={`btn-sm rounded-full font-semibold ${category === c ? "btn-primary" : "btn-outline"}`}
             >
               {c === "all" ? "All Categories" : c}
+            </button>
+          ))}
+
+          <span className="text-xs font-bold text-[var(--muted)] uppercase ml-4">Month:</span>
+          {[
+            { id: "apr", label: "Apr" },
+            { id: "may", label: "May" },
+            { id: "jun", label: "Jun" },
+            { id: "jul", label: "Jul" },
+          ].map(m => (
+            <button
+              key={m.id}
+              onClick={() => setMonth(m.id)}
+              className={`btn-sm rounded-full font-semibold ${month === m.id ? "btn-primary" : "btn-outline"}`}
+            >
+              {m.label}
             </button>
           ))}
         </div>

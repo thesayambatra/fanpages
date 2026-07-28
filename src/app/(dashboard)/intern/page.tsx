@@ -25,7 +25,6 @@ export default async function InternDashboard() {
 
       // Category total
       const cat = ch.category || "Other";
-      categoryViews[cat] = (categoryViews[cat] || 0) + snap.totalViews;
 
       // Monthly views
       const earliest = await prisma.snapshot.findFirst({
@@ -33,7 +32,9 @@ export default async function InternDashboard() {
         orderBy: { fetchedAt: "asc" },
       });
       if (earliest && snap.id !== earliest.id) {
-        monthlyViews += Math.max(0, snap.totalViews - earliest.totalViews);
+        const growth = Math.max(0, snap.totalViews - earliest.totalViews);
+        monthlyViews += growth;
+        categoryViews[cat] = (categoryViews[cat] || 0) + growth;
       }
     }
     channelData.push({ ...ch, snap });
@@ -69,14 +70,14 @@ export default async function InternDashboard() {
         </div>
       </div>
 
-      {/* Category breakdown */}
+      {/* Category breakdown - views this month */}
       {Object.keys(categoryViews).length > 0 && (
         <div className="card">
-          <div className="card-header"><h3>Views by Category</h3></div>
+          <div className="card-header"><h3>Your Views This Month by Category</h3></div>
           <div className="stat-grid">
             {Object.entries(categoryViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
               <div key={cat} className="stat-card">
-                <div className="stat-val">{views.toLocaleString()}</div>
+                <div className="stat-val" style={{ color: "#08bd80" }}>+{views.toLocaleString()}</div>
                 <div className="stat-label">{cat}</div>
               </div>
             ))}

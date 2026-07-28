@@ -40,6 +40,19 @@ export default async function InternDashboard() {
     channelData.push({ ...ch, snap });
   }
 
+  // Get total category views (ALL channels in same category, not just intern's)
+  const internCategories = [...new Set(channels.map(ch => ch.category).filter(Boolean))];
+  const categoryTotalViews: Record<string, number> = {};
+  for (const cat of internCategories) {
+    const catChannels = await prisma.channel.findMany({ where: { category: cat } });
+    let catTotal = 0;
+    for (const ch of catChannels) {
+      const snap = await latestSnapshot(ch.id);
+      if (snap) catTotal += snap.totalViews;
+    }
+    categoryTotalViews[cat] = catTotal;
+  }
+
   return (
     <>
       <div className="page-header">
@@ -78,7 +91,22 @@ export default async function InternDashboard() {
             {Object.entries(categoryViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
               <div key={cat} className="stat-card">
                 <div className="stat-val" style={{ color: "#08bd80" }}>+{views.toLocaleString()}</div>
-                <div className="stat-label">{cat}</div>
+                <div className="stat-label">{cat} This Month</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Total category views (all channels) */}
+      {Object.keys(categoryTotalViews).length > 0 && (
+        <div className="card">
+          <div className="card-header"><h3>Total Category Views (All Channels)</h3></div>
+          <div className="stat-grid">
+            {Object.entries(categoryTotalViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
+              <div key={cat} className="stat-card">
+                <div className="stat-val">{views.toLocaleString()}</div>
+                <div className="stat-label">{cat} Total</div>
               </div>
             ))}
           </div>

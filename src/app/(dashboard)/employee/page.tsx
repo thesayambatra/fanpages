@@ -17,10 +17,33 @@ export default async function EmployeeDashboard() {
     include: { user: true },
   });
 
-  let totalSubs = 0, totalViews = 0, totalEng = 0, snapCount = 0;
+  let totalSubs = 0, totalViews = 0, snapCount = 0;
+  let monthlyViews = 0;
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const categoryMonthlyViews: Record<string, number> = {};
+  const categoryTotalViews: Record<string, number> = {};
+
   for (const ch of allChannels) {
     const snap = await latestSnapshot(ch.id);
-    if (snap) { totalSubs += snap.subscribers; totalViews += snap.totalViews; totalEng += snap.engagementRate; snapCount++; }
+    if (snap) { 
+      totalSubs += snap.subscribers; 
+      totalViews += snap.totalViews; 
+      snapCount++;
+
+      const cat = ch.category || "Other";
+      categoryTotalViews[cat] = (categoryTotalViews[cat] || 0) + snap.totalViews;
+
+      // Monthly views
+      const earliest = await prisma.snapshot.findFirst({
+        where: { channelId: ch.id, fetchedAt: { gte: monthStart } },
+        orderBy: { fetchedAt: "asc" },
+      });
+      if (earliest && snap.id !== earliest.id) {
+        const growth = Math.max(0, snap.totalViews - earliest.totalViews);
+        monthlyViews += growth;
+        categoryMonthlyViews[cat] = (categoryMonthlyViews[cat] || 0) + growth;
+      }
+    }
   }
 
   // Intern leaderboard
@@ -70,7 +93,42 @@ export default async function EmployeeDashboard() {
           <div className="stat-val">{totalViews.toLocaleString()}</div>
           <div className="stat-label">Total Views</div>
         </div>
+        <div className="stat-card" style={{ borderLeft: "3px solid #08bd80" }}>
+          <div className="stat-icon">📅</div>
+          <div className="stat-val" style={{ color: "#08bd80" }}>+{monthlyViews.toLocaleString()}</div>
+          <div className="stat-label">Views This Month</div>
+        </div>
       </div>
+
+      {/* Category Views This Month */}
+      {Object.keys(categoryMonthlyViews).length > 0 && (
+        <div className="card">
+          <div className="card-header"><h3>Views This Month by Category</h3></div>
+          <div className="stat-grid">
+            {Object.entries(categoryMonthlyViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
+              <div key={cat} className="stat-card" style={{ borderTop: "3px solid #08bd80" }}>
+                <div className="stat-val" style={{ color: "#08bd80" }}>+{views.toLocaleString()}</div>
+                <div className="stat-label">{cat}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Total Category Views */}
+      {Object.keys(categoryTotalViews).length > 0 && (
+        <div className="card">
+          <div className="card-header"><h3>Total Category Views (All Time)</h3></div>
+          <div className="stat-grid">
+            {Object.entries(categoryTotalViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
+              <div key={cat} className="stat-card">
+                <div className="stat-val">{views.toLocaleString()}</div>
+                <div className="stat-label">{cat}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Intern Leaderboard */}
       {leaderboard.length > 0 && (

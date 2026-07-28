@@ -79,10 +79,10 @@ export async function GET() {
   const chartLabels = ["Apr", "May", "Jun", "Jul"];
   const chartData = {
     labels: chartLabels,
-    jee: [3121348, 0, 0, categories.JEE.viewsThisMonth],
-    neet: [2865906, 0, 0, categories.NEET.viewsThisMonth],
-    k12: [2334266, 0, 0, categories.K12.viewsThisMonth],
-    upsc: [9529210, 0, 0, categories.UPSC.viewsThisMonth],
+    jee: [3121348, 0, 32086829, categories.JEE.viewsThisMonth],
+    neet: [2865906, 0, 1696366, categories.NEET.viewsThisMonth],
+    k12: [2334266, 0, 1053030, categories.K12.viewsThisMonth],
+    upsc: [9529210, 0, 6657320, categories.UPSC.viewsThisMonth],
   };
 
   const responseData = {

@@ -21,7 +21,16 @@ export default async function EmployeeDashboard() {
   let monthlyViews = 0;
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const categoryMonthlyViews: Record<string, number> = {};
+  // Get total views for ALL channels in each category (not just this employee's)
+  const allCategoryChannels = await prisma.channel.findMany();
   const categoryTotalViews: Record<string, number> = {};
+  for (const ch of allCategoryChannels) {
+    if (!ch.category) continue;
+    const snap = await latestSnapshot(ch.id);
+    if (snap) {
+      categoryTotalViews[ch.category] = (categoryTotalViews[ch.category] || 0) + snap.totalViews;
+    }
+  }
 
   for (const ch of allChannels) {
     const snap = await latestSnapshot(ch.id);
@@ -31,7 +40,6 @@ export default async function EmployeeDashboard() {
       snapCount++;
 
       const cat = ch.category || "Other";
-      categoryTotalViews[cat] = (categoryTotalViews[cat] || 0) + snap.totalViews;
 
       // Monthly views
       const earliest = await prisma.snapshot.findFirst({
@@ -115,10 +123,10 @@ export default async function EmployeeDashboard() {
         </div>
       )}
 
-      {/* Total Category Views */}
+      {/* Total Category Views (ALL channels in category, not just yours) */}
       {Object.keys(categoryTotalViews).length > 0 && (
         <div className="card">
-          <div className="card-header"><h3>Total Category Views (All Time)</h3></div>
+          <div className="card-header"><h3>Total Category Views (All Channels)</h3></div>
           <div className="stat-grid">
             {Object.entries(categoryTotalViews).sort((a, b) => b[1] - a[1]).map(([cat, views]) => (
               <div key={cat} className="stat-card">
